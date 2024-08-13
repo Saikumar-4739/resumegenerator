@@ -1,0 +1,22 @@
+.resume-preview {
+    padding: 20px;
+  }
+  
+  .resume-content {
+    width: 100%;
+    max-width: 210mm; /* Match A4 width */
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  
+  h1, h2, h3, p {
+    margin: 0;
+    padding: 5px 0;
+  }
+  
+  .button-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
