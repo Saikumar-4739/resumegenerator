@@ -20,7 +20,7 @@ import {
   ArrowLeftOutlined,
   PercentageOutlined,
 } from "@ant-design/icons";
-import "../styles/previewresume.css"
+import "../styles/previewresume.css";
 import axios from "axios";
 
 const { Item } = Form;
@@ -88,7 +88,6 @@ export const PreviewResume: React.FC = () => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [isEdited, setIsEdited] = useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -100,11 +99,11 @@ export const PreviewResume: React.FC = () => {
         }
 
         const response = await axios.post('http://localhost:3023/users/getUsersByUserIds', {
-          userId: [userId], // Pass userId as an array
+          userId: [userId],
         });
 
         if (response.data.status) {
-          const user = response.data.data[0]; // Assuming response data is an array
+          const user = response.data.data[0];
           setUserDetails(user);
         } else {
           throw new Error(response.data.internalMessage || "Failed to fetch user details");
@@ -133,44 +132,8 @@ export const PreviewResume: React.FC = () => {
     navigate("/download-page");
   };
 
-  const handleSave = async () => {
-    try {
-      if (!userDetails) return;
-
-      const userId = parseInt(localStorage.getItem("userId") || "0");
-      if (!userId) {
-        throw new Error("User ID is not available");
-      }
-
-      const userData = {
-        uname: userDetails.name,
-        email: userDetails.email,
-        mobile: userDetails.mobile,
-        address: [userDetails.address],
-      };
-
-      await axios.post("http://localhost:3023/users/createUser", userData);
-      await axios.post("http://localhost:3023/experiences/createExp", { userId, ...userDetails.experience });
-      await axios.post("http://localhost:3023/academics/create", { userId, ...userDetails.academic });
-      await axios.post("http://localhost:3023/skills/createSkill", { userId, ...userDetails.skills });
-      await axios.post("http://localhost:3023/personal-details/create", { userId, ...userDetails.personalDetails });
-
-      message.success("Resume saved successfully");
-      setIsEdited(false);
-    } catch (error) {
-      if (error instanceof Error) {
-        message.error("Failed to save resume");
-        console.error("Error saving resume:", error.message);
-      } else {
-        message.error("Failed to save resume");
-        console.error("Error saving resume: An unknown error occurred");
-      }
-    }
-  };
-
   const handleEdit = () => {
-    // Logic to allow editing of the form
-    setIsEdited(true);
+    navigate("/user-form"); // Navigate to the UserForm component
   };
 
   if (loading) {
@@ -268,51 +231,28 @@ export const PreviewResume: React.FC = () => {
           <Input prefix={<GlobalOutlined />} value={userDetails.personalDetails.languagesKnown} readOnly />
         </Item>
         <Form.Item {...tailLayout}>
-          {isEdited ? (
-            <>
-              <Button
-                type="default"
-                icon={<ArrowLeftOutlined />}
-                onClick={handlePrevious}
-                style={{ margin: "0 8px" }}
-              >
-                Previous Section
-              </Button>
-              <Button
-                type="primary"
-                icon={<SaveOutlined />}
-                onClick={handleSave}
-                style={{ margin: "0 8px" }}
-              >
-                Save
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                type="default"
-                icon={<ArrowLeftOutlined />}
-                onClick={handlePrevious}
-              >
-                Previous Section
-              </Button>
-              <Button
-                type="default"
-                icon={<ArrowRightOutlined />}
-                onClick={handleNextSection}
-              >
-                Next Section
-              </Button>
-              <Button
-                type="primary"
-                icon={<SaveOutlined />}
-                onClick={handleEdit}
-                style={{ margin: "0 8px" }}
-              >
-                Edit
-              </Button>
-            </>
-          )}
+          <Button
+            type="default"
+            icon={<ArrowLeftOutlined />}
+            onClick={handlePrevious}
+          >
+            Previous Section
+          </Button>
+          <Button
+            type="default"
+            icon={<ArrowRightOutlined />}
+            onClick={handleNextSection}
+          >
+            Next Section
+          </Button>
+          <Button
+            type="primary"
+            icon={<SaveOutlined />}
+            onClick={handleEdit}
+            style={{ margin: "0 8px" }}
+          >
+            Edit
+          </Button>
         </Form.Item>
       </Form>
     </div>

@@ -34,7 +34,6 @@ export class UserController {
 
   @Post(':userId')
   async getUserById(@Param('userId') userId: number): Promise<UserResponse> {
-    console.log(userId);
     return this.userService.getUserById(userId);
   }
 }

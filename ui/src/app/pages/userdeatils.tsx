@@ -6,109 +6,83 @@ import axios from "axios";
 
 const { Title } = Typography;
 
-export const AddUserForm: React.FC = () => {
+interface UserDetails {
+  uname: string;
+  email: string;
+  mobileNo: string;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    country: string;
+    zipcode: string;
+  };
+}
+
+export const UserDetailsForm: React.FC = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [formData, setFormData] = useState<any>(null);
-
-  notification.config({
-    top: 50,
-    duration: 3,      
+  const [userDetails, setUserDetails] = useState<UserDetails>({
+    uname: '',
+    email: '',
+    mobileNo: '',
+    address: {
+      street: '',
+      city: '',
+      state: '',
+      country: '',
+      zipcode: '',
+    },
   });
-
-  const showNotification = (type: "success" | "error", message: string, description: string) => {
-    notification[type]({
-      message,
-      description,
-      className: 'small-notification',
-    });
-  };
+  const [userId] = useState<string | null>(localStorage.getItem('userId'));
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const userId = localStorage.getItem("userId");
+    if (userId) {
+      fetchUserDetails(userId);
+    }
+  }, [userId]);
 
-      if (userId) {
-        try {
-          const response = await axios.get(`http://localhost:3023/users/${userId}`);
-          const data = response.data.data[0];
-
-          if (data) {
-            const d = {
-              fullName: data.uname || '',
-              email: data.email || '',
-              mobile: data.mobileNo || '',
-              address: {
-                street: data.address?.street || '',
-                city: data.address?.city || '',
-                state: data.address?.state || '',
-                country: data.address?.country || '',
-                zipcode: data.address?.zipcode || ''
-              },
-            };
-
-            setFormData(d);
-            form.setFieldsValue(d);
-            setIsEditing(false);
-          } else {
-            showNotification("error", "Error", "No data found for the provided user ID.");
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-          if (axios.isAxiosError(error)) {
-            showNotification("error", "Error", error.response?.data?.internalMessage || "Failed to fetch user data. Please try again later.");
-          } else {
-            showNotification("error", "Error", "An unexpected error occurred. Please try again.");
-          }
-        }
-      } else {
-        showNotification("error", "Error", "User ID not found in local storage.");
-      }
-    };
-
-    fetchUserData();
-  }, [form]);
-
-  const handleNextSection = () => {
-    navigate("/experience");
+  const fetchUserDetails = async (userId: string) => {
+    try {
+      const response = await axios.post(`http://localhost:3023/users/${userId}`);
+      const backendData: UserDetails = response.data.data[0];
+      setUserDetails(backendData);
+      form.setFieldsValue(backendData);
+      setIsEditing(false);
+    } catch (error) {
+      notification.error({
+        message: 'Error',
+        description: 'Failed to retrieve user details.',
+      });
+    }
   };
 
-  const onFinish = async (values: any) => {
-    if (!values.address || !Object.values(values.address).every(Boolean)) {
-      showNotification("error", "Validation Error", "Please complete all address fields.");
+  const saveDataToBackend = async () => {
+    if (!userId) {
+      notification.error({
+        message: 'Error',
+        description: 'User ID not found. Please make sure you have saved user details.',
+      });
       return;
     }
 
-    setLoading(true);
-
     try {
-      const endpoint = isEditing 
-        ? `http://localhost:3023/users/updateuser/${localStorage.getItem("userId")}`
+      const endpoint = isEditing
+        ? `http://localhost:3023/users/updateuser/${userId}`
         : "http://localhost:3023/users/createuser";
 
-      const { data } = await axios.post(endpoint, values);
-
-      if (data.status) {
-        if (!isEditing) {
-          localStorage.setItem("userId", data.data.userId);
-        }
-        showNotification("success", "Data Saved", "Data has been saved successfully. Click on the next section to proceed.");
-        setIsEditing(false);
-        form.setFieldsValue(values);
-      } else {
-        showNotification("error", "Error", data.internalMessage || "Failed to save data. Please try again.");
-      }
+      await axios.post(endpoint, userDetails);
+      notification.success({
+        message: isEditing ? 'Data Updated' : 'Data Saved',
+        description: `User details have been ${isEditing ? 'updated' : 'saved'} successfully.`,
+      });
+      setIsEditing(false);
     } catch (error) {
-      console.error("Error saving data:", error);
-      if (axios.isAxiosError(error)) {
-        showNotification("error", "Error", error.response?.data?.internalMessage || "Failed to save data. Please try again later.");
-      } else {
-        showNotification("error", "Error", "An unexpected error occurred. Please try again.");
-      }
-    } finally {
-      setLoading(false);
+      notification.error({
+        message: 'Error',
+        description: 'Failed to save data. Please try again.',
+      });
     }
   };
 
@@ -116,22 +90,32 @@ export const AddUserForm: React.FC = () => {
     setIsEditing(true);
   };
 
+  const handleNextSection = () => {
+    navigate("/experience");
+  };
+
   return (
     <div className="form-container">
       <Form
         form={form}
-        onFinish={onFinish}
-        className="custom-form"
         layout="vertical"
       >
+        <Title level={4} style={{ marginTop: "20px" }}>
+          User Information
+        </Title>
+
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12}>
             <Form.Item
               label="Full Name"
-              name="fullName"
+              name="uname"
               rules={[{ required: true, message: "Please input your full name!" }]}
             >
-              <Input disabled={!isEditing} />
+              <Input
+                value={userDetails.uname}
+                onChange={(e) => setUserDetails({ ...userDetails, uname: e.target.value })}
+                disabled={!isEditing}
+              />
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
@@ -140,23 +124,34 @@ export const AddUserForm: React.FC = () => {
               name="email"
               rules={[{ required: true, message: "Please input your email!" }]}
             >
-              <Input disabled={!isEditing} />
+              <Input
+                value={userDetails.email}
+                onChange={(e) => setUserDetails({ ...userDetails, email: e.target.value })}
+                disabled={!isEditing}
+              />
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
             <Form.Item
               label="Mobile Number"
-              name="mobile"
+              name="mobileNo"
               rules={[
                 { required: true, message: "Please input your mobile number!" },
                 { pattern: /^\d{10}$/, message: "Please input a valid 10-digit mobile number!" }
               ]}
             >
-              <Input type="tel" disabled={!isEditing} />
+              <Input
+                value={userDetails.mobileNo}
+                onChange={(e) => setUserDetails({ ...userDetails, mobileNo: e.target.value })}
+                disabled={!isEditing}
+              />
             </Form.Item>
           </Col>
         </Row>
-        <Title level={4} style={{ marginTop: "20px" }}>Address Information</Title>
+
+        <Title level={4} style={{ marginTop: "20px" }}>
+          Address Information
+        </Title>
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12}>
             <Form.Item
@@ -164,7 +159,14 @@ export const AddUserForm: React.FC = () => {
               name={["address", "street"]}
               rules={[{ required: true, message: "Please input your street!" }]}
             >
-              <Input disabled={!isEditing} />
+              <Input
+                value={userDetails.address.street}
+                onChange={(e) => setUserDetails({
+                  ...userDetails,
+                  address: { ...userDetails.address, street: e.target.value }
+                })}
+                disabled={!isEditing}
+              />
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
@@ -173,7 +175,14 @@ export const AddUserForm: React.FC = () => {
               name={["address", "city"]}
               rules={[{ required: true, message: "Please input your city!" }]}
             >
-              <Input disabled={!isEditing} />
+              <Input
+                value={userDetails.address.city}
+                onChange={(e) => setUserDetails({
+                  ...userDetails,
+                  address: { ...userDetails.address, city: e.target.value }
+                })}
+                disabled={!isEditing}
+              />
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
@@ -182,7 +191,14 @@ export const AddUserForm: React.FC = () => {
               name={["address", "state"]}
               rules={[{ required: true, message: "Please input your state!" }]}
             >
-              <Input disabled={!isEditing} />
+              <Input
+                value={userDetails.address.state}
+                onChange={(e) => setUserDetails({
+                  ...userDetails,
+                  address: { ...userDetails.address, state: e.target.value }
+                })}
+                disabled={!isEditing}
+              />
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
@@ -191,7 +207,14 @@ export const AddUserForm: React.FC = () => {
               name={["address", "country"]}
               rules={[{ required: true, message: "Please input your country!" }]}
             >
-              <Input disabled={!isEditing} />
+              <Input
+                value={userDetails.address.country}
+                onChange={(e) => setUserDetails({
+                  ...userDetails,
+                  address: { ...userDetails.address, country: e.target.value }
+                })}
+                disabled={!isEditing}
+              />
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
@@ -200,17 +223,24 @@ export const AddUserForm: React.FC = () => {
               name={["address", "zipcode"]}
               rules={[{ required: true, message: "Please input your zip code!" }]}
             >
-              <Input disabled={!isEditing} />
+              <Input
+                value={userDetails.address.zipcode}
+                onChange={(e) => setUserDetails({
+                  ...userDetails,
+                  address: { ...userDetails.address, zipcode: e.target.value }
+                })}
+                disabled={!isEditing}
+              />
             </Form.Item>
           </Col>
         </Row>
+
         <Form.Item style={{ textAlign: "center" }}>
           {isEditing ? (
             <Button
               type="primary"
               icon={<SaveOutlined />}
-              htmlType="submit"
-              loading={loading}
+              onClick={saveDataToBackend}
             >
               Save
             </Button>

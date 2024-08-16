@@ -65,7 +65,7 @@ export const PersonalDetailsForm: React.FC = () => {
 
     try {
       if (isEditing) {
-        await axios.put(`http://localhost:3023/personal-details/update/${userId}`, personalDetails);
+        await axios.post(`http://localhost:3023/personal-details/update/${userId}`, personalDetails);
         notification.success({
           message: 'Data Updated',
           description: 'Data has been updated successfully. Click on Next Section to proceed.',

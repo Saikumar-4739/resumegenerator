@@ -28,7 +28,7 @@ const LoginPage: React.FC = () => {
     } else if (username === 'saikumarummidisetti23@gmail.com' && password === 'password') {
       localStorage.setItem('token', 'dummyToken'); 
       localStorage.setItem('email', username); 
-      localStorage.setItem('userId', '10'); 
+      localStorage.setItem('userId', '2'); 
       navigate('/user-form');
     } else if (username === 'dummy@gmail.com' && password === 'password') {
       localStorage.setItem('token', 'dummyToken'); 

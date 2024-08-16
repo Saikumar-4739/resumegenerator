@@ -17,13 +17,13 @@ export class SkillController {
   }
 
   // Update an existing skill
-  @Post('/updateSkill')
+  @Post(':userId')
   async updateSkill(@Body() skillData: SkillCreateRequest & { skillId: number }): Promise<SkillResponse> {
     return this.skillService.updateSkill(skillData.skillId, skillData);
   }
 
   // Delete a skill by ID
-  @Post('/deleteSkill')
+  @Post(':userId')
   async deleteSkill(@Body() skillData: { skillId: number }): Promise<SkillResponse> {
     return this.skillService.deleteSkill(skillData.skillId);
   }
