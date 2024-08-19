@@ -19,6 +19,8 @@ import {
   SaveOutlined,
   ArrowLeftOutlined,
   PercentageOutlined,
+  LeftOutlined,
+  RightOutlined,
 } from "@ant-design/icons";
 import "../styles/previewresume.css";
 import axios from "axios";
@@ -233,17 +235,9 @@ export const PreviewResume: React.FC = () => {
         <Form.Item {...tailLayout}>
           <Button
             type="default"
-            icon={<ArrowLeftOutlined />}
+            icon={<LeftOutlined />}
             onClick={handlePrevious}
           >
-            Previous Section
-          </Button>
-          <Button
-            type="default"
-            icon={<ArrowRightOutlined />}
-            onClick={handleNextSection}
-          >
-            Next Section
           </Button>
           <Button
             type="primary"
@@ -252,6 +246,12 @@ export const PreviewResume: React.FC = () => {
             style={{ margin: "0 8px" }}
           >
             Edit
+          </Button>
+          <Button
+            type="default"
+            icon={<RightOutlined />}
+            onClick={handleNextSection}
+          >
           </Button>
         </Form.Item>
       </Form>

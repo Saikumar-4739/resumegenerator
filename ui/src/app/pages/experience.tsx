@@ -141,7 +141,7 @@ export const Experience: React.FC = () => {
     if (direction === 'prev') {
       navigate('/previous-page');
     } else {
-      navigate('/next-page');
+      navigate('/academics');
     }
   };
 
