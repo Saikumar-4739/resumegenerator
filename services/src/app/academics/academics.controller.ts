@@ -24,7 +24,7 @@ export class AcademicController {
     return this.academicService.deleteAcademicsByIds(req);
   }
 
-  @Post('/update')
+  @Post('/update/:userId')
   async updateAcademic(@Body() academicData: AcademicCreateRequest & { academicId: number }): Promise<AcademicResponse> {
     return this.academicService.updateAcademic(academicData);
   }

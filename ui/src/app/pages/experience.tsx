@@ -17,6 +17,7 @@ export const Experience: React.FC = () => {
   const navigate = useNavigate();
   const [forms, setForms] = useState<Experience[]>([]);
   const [isEditing, setIsEditing] = useState<boolean[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [userId, setUserId] = useState<string | null>(localStorage.getItem('userId'));
 
   useEffect(() => {
@@ -108,6 +109,7 @@ export const Experience: React.FC = () => {
     setIsEditing([...isEditing, true]);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const saveAllExperiences = async () => {
     if (!userId) {
       notification.error({

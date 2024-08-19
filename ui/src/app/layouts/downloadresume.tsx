@@ -105,40 +105,40 @@ export const DownloadPage: React.FC = () => {
     const templateSelector = document.querySelector(".template-selector-container") as HTMLElement;
 
     if (resumeTemplate && buttons && templateSelector) {
-      // Hide elements temporarily
+   
       buttons.style.display = "none";
       templateSelector.style.display = "none";
 
-      // Ensure content is rendered and visible
+   
       resumeTemplate.style.visibility = 'visible';
       resumeTemplate.style.position = 'relative';
-      resumeTemplate.style.width = '210mm'; // A4 width in millimeters
-      resumeTemplate.style.height = '297mm'; // A4 height in millimeters
-      resumeTemplate.style.overflow = 'hidden'; // Prevent overflow issues
+      resumeTemplate.style.width = '210mm'; 
+      resumeTemplate.style.height = '297mm';
+      resumeTemplate.style.overflow = 'hidden';
 
       try {
         const canvas = await html2canvas(resumeTemplate, {
           useCORS: true,
-          scale: 2, // Increase scale to improve quality
-          backgroundColor: null // Transparent background
+          scale: 2, 
+          backgroundColor: null 
         });
 
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF({
           orientation: 'portrait',
           unit: 'mm',
-          format: [210, 297] // A4 size in millimeters
+          format: [210, 297] 
         });
 
-        // Get canvas dimensions
+       
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
 
-        // Adjust PDF size and scaling
-        const pdfWidth = 210; // A4 width in millimeters
+      
+        const pdfWidth = 210;
         const pdfHeight = (canvasHeight * pdfWidth) / canvasWidth;
 
-        // Add the image to the PDF
+   
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
         
         // Save the PDF

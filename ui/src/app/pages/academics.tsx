@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, notification, Row, Col } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { SaveOutlined,RightOutlined, LeftOutlined, PlusOutlined } from '@ant-design/icons';
+import { SaveOutlined, RightOutlined, LeftOutlined, PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 interface Academics {
@@ -14,25 +14,24 @@ interface Academics {
 
 export const AddAcademicsForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [academicList, setAcademicList] = useState<Academics[]>([{
-    institutionName: '',
-    passingYear: 0,
-    qualification: '',
-    university: '',
-    percentage: 0,
-  }]);
+  const [academicList, setAcademicList] = useState<Academics[]>([
+    {
+      institutionName: '',
+      passingYear: 0,
+      qualification: '',
+      university: '',
+      percentage: 0,
+    },
+  ]);
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [userId, setUserId] = useState<string | null>(localStorage.getItem('userId'));
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [userId] = useState<string | null>(localStorage.getItem('userId'));
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (userId) {
       fetchAcademicData(userId);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchAcademicData = async (userId: string) => {
@@ -42,7 +41,7 @@ export const AddAcademicsForm: React.FC = () => {
       const backendData: Academics[] = response.data.data;
       setAcademicList(backendData);
       form.setFieldsValue({ academicList: backendData });
-      setIsEditing(true);
+      setIsEditing(false); // Default to view mode after fetching data
     } catch {
       notification.warning({
         message: 'Error',
@@ -54,7 +53,7 @@ export const AddAcademicsForm: React.FC = () => {
     }
   };
 
-  const updateDataInBackend = async () => {
+  const createAcademicData = async () => {
     if (!userId) {
       notification.error({
         message: 'Error',
@@ -64,18 +63,65 @@ export const AddAcademicsForm: React.FC = () => {
     }
 
     const data = { userId, academicList };
-
     try {
-      await axios.post('http://localhost:3023/academics/update', data);
-      notification.success({
-        message: 'Success',
-        description: 'Data updated successfully! Click on Next Section.',
-      });
-      setIsEditing(false);
+      const response = await axios.post('http://localhost:3023/academics/create', data);
+      if (response.status === 200) {
+        notification.success({
+          message: 'Success',
+          description: 'Data saved successfully!',
+          className: 'custom-notification',
+        });
+        setIsEditing(true); // Switch to editing mode after creation
+      } else {
+        notification.error({
+          message: 'Error',
+          description: 'Failed to save data. Server response was not OK.',
+          className: 'custom-notification',
+        });
+      }
     } catch (error) {
+      console.error('Create Error:', error);
       notification.error({
         message: 'Error',
-        description: 'Failed to update data. Please try again.',
+        description: 'Failed to save data. Please check the console for more details.',
+        className: 'custom-notification',
+      });
+    }
+  };
+
+  const updateAcademicData = async () => {
+    if (!userId) {
+      notification.error({
+        message: 'Error',
+        description: 'User ID not found. Please make sure you have saved user details.',
+      });
+      return;
+    }
+
+    const data = { userId, academicList };
+    try {
+      const response = await axios.post(`http://localhost:3023/academics/update/${userId}`, data);
+      if (response.status === 200) {
+        notification.success({
+          message: 'Success',
+          description: 'Data updated successfully!',
+          className: 'custom-notification',
+        });
+        setIsEditing(false); // Remain in view mode after update
+        fetchAcademicData(userId); // Re-fetch data to ensure all forms are updated
+      } else {
+        notification.error({
+          message: 'Error',
+          description: 'Failed to update data. Server response was not OK.',
+          className: 'custom-notification',
+        });
+      }
+    } catch (error) {
+      console.error('Update Error:', error);
+      notification.error({
+        message: 'Error',
+        description: 'Failed to update data. Please check the console for more details.',
+        className: 'custom-notification',
       });
     }
   };
@@ -89,50 +135,34 @@ export const AddAcademicsForm: React.FC = () => {
   };
 
   const handleSaveOrUpdate = () => {
-    if (isEditing) {
-      updateDataInBackend();
-    } else {
-      saveDataToBackend();
-    }
+    form.validateFields()
+      .then(() => {
+        // Sync form values with state
+        const values = form.getFieldsValue();
+        setAcademicList(values.academicList || []);
+        if (isEditing) {
+          updateAcademicData();
+        } else {
+          createAcademicData();
+        }
+      })
+      .catch(errorInfo => {
+        console.log('Validation Failed:', errorInfo);
+      });
   };
 
-  const saveDataToBackend = async () => {
-    if (!userId) {
-      notification.error({
-        message: 'Error',
-        description: 'User ID not found. Please make sure you have saved user details.',
-      });
-      return;
-    }
-
-    const data = { userId, academicList };
-
-    try {
-      await axios.post('http://localhost:3023/academics/create', data);
-      notification.success({
-        message: 'Success',
-        description: 'Data saved successfully!',
-      });
-      setIsEditing(false);
-    } catch (error) {
-      notification.error({
-        message: 'Error',
-        description: 'Failed to save data. Please try again.',
-      });
-    }
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFieldChange = (index: number, field: keyof Academics, value: any) => {
     const updatedList = [...academicList];
     updatedList[index] = { ...updatedList[index], [field]: value };
     setAcademicList(updatedList);
+    // Update the form with the new value
+    form.setFieldsValue({ academicList: updatedList });
   };
 
   const handleAddAcademic = () => {
     setAcademicList(prev => [
       ...prev,
-      { institutionName: '', passingYear: 0, qualification: '', university: '', percentage: 0 }
+      { institutionName: '', passingYear: 0, qualification: '', university: '', percentage: 0 },
     ]);
   };
 
@@ -154,7 +184,7 @@ export const AddAcademicsForm: React.FC = () => {
               <Input
                 value={academic.institutionName}
                 onChange={(event) => handleFieldChange(index, 'institutionName', event.target.value)}
-                disabled={isEditing}
+                disabled={!isEditing}
               />
             </Form.Item>
           </Col>
@@ -168,7 +198,7 @@ export const AddAcademicsForm: React.FC = () => {
                 type="number"
                 value={academic.passingYear}
                 onChange={(event) => handleFieldChange(index, 'passingYear', Number(event.target.value))}
-                disabled={isEditing}
+                disabled={!isEditing}
               />
             </Form.Item>
           </Col>
@@ -181,7 +211,7 @@ export const AddAcademicsForm: React.FC = () => {
               <Input
                 value={academic.qualification}
                 onChange={(event) => handleFieldChange(index, 'qualification', event.target.value)}
-                disabled={isEditing}
+                disabled={!isEditing}
               />
             </Form.Item>
           </Col>
@@ -194,7 +224,7 @@ export const AddAcademicsForm: React.FC = () => {
               <Input
                 value={academic.university}
                 onChange={(event) => handleFieldChange(index, 'university', event.target.value)}
-                disabled={isEditing}
+                disabled={!isEditing}
               />
             </Form.Item>
           </Col>
@@ -208,7 +238,7 @@ export const AddAcademicsForm: React.FC = () => {
                 type="number"
                 value={academic.percentage}
                 onChange={(event) => handleFieldChange(index, 'percentage', Number(event.target.value))}
-                disabled={isEditing}
+                disabled={!isEditing}
               />
             </Form.Item>
           </Col>
@@ -221,6 +251,7 @@ export const AddAcademicsForm: React.FC = () => {
           icon={<LeftOutlined />}
           style={{ marginRight: '10px' }}
         >
+          Previous
         </Button>
         <Button
           type="primary"
@@ -228,13 +259,14 @@ export const AddAcademicsForm: React.FC = () => {
           icon={<SaveOutlined />}
           style={{ marginRight: '10px' }}
         >
-          Edit
+          {isEditing ? 'Save' : 'Edit'}
         </Button>
         <Button
           type="default"
           onClick={handleNextSection}
           icon={<RightOutlined />}
         >
+          Next
         </Button>
         <Button
           type="dashed"

@@ -5,7 +5,7 @@ import { SaveOutlined, EditOutlined, PlusOutlined, RightOutlined, LeftOutlined }
 import axios from 'axios';
 
 interface Skill {
-  id?: string; // Optional ID for existing skills
+  id?: string;
   skillName: string;
   department: string;
 }
@@ -15,46 +15,43 @@ export const AddSkillsForm: React.FC = () => {
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
   const [skillsList, setSkillsList] = useState<Skill[]>([{ skillName: '', department: '' }]);
-
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
     if (userId) {
       fetchSkillsData(userId);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
-
-  useEffect(() => {
-    if (skillsList.length > 0) {
-      form.setFieldsValue({ skillsList });
-    }
-  }, [skillsList, form]);
 
   const fetchSkillsData = async (userId: string) => {
     try {
       const response = await axios.post(`http://localhost:3023/skills/${userId}`);
-      
-      if (response.status === 200) {
-        const backendData: Skill[] = response.data.data || [];
-        console.log('Fetched Skills Data:', backendData);
-
-        if (backendData.length > 0) {
-          setSkillsList(backendData);
-        } else {
-          // Handle case where no data is returned
-          setSkillsList([{ skillName: '', department: '' }]);
-        }
-        setIsEditing(false);
+      if (response.data && response.data.data.length > 0) {
+        const backendData: Skill[] = response.data.data;
+        setSkillsList(backendData);
+        form.setFieldsValue({ skillsList: backendData });
       } else {
-        throw new Error(`Unexpected status code: ${response.status}`);
+        resetSkillsList();
       }
+      setIsEditing(false);
     } catch (error) {
-      console.error('Fetch Skills Data Error:', error);
-      notification.error({
-        message: 'Error',
-        description: `Failed to fetch skills data: ${(error as Error).message || 'Unknown error'}`,
-      });
+      handleFetchError(error);
     }
+  };
+
+  const resetSkillsList = () => {
+    const emptyList = [{ skillName: '', department: '' }];
+    setSkillsList(emptyList);
+    form.setFieldsValue({ skillsList: emptyList });
+  };
+
+  const handleFetchError = (error: unknown) => {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    notification.error({
+      message: 'Error',
+      description: `Failed to fetch skills data: ${errorMessage}`,
+    });
   };
 
   const saveDataToBackend = async () => {
@@ -66,9 +63,6 @@ export const AddSkillsForm: React.FC = () => {
       return;
     }
 
-    const data = form.getFieldsValue();
-    console.log('Data to save:', data);
-
     const saveData = skillsList.map(skill => ({
       id: skill.id || undefined,
       skillName: skill.skillName,
@@ -77,59 +71,49 @@ export const AddSkillsForm: React.FC = () => {
     }));
 
     try {
-      if (isEditing) {
-        await axios.post(`http://localhost:3023/skills/${userId}`, { skills: saveData });
-        notification.success({
-          message: 'Success',
-          description: 'Skills updated successfully! Click on Next Section.',
-        });
-      } else {
-        await axios.post('http://localhost:3023/skills/createSkill', { skills: saveData });
-        notification.success({
-          message: 'Success',
-          description: 'Skills saved successfully! Click on Next Section.',
-        });
-      }
+      const endpoint = isEditing ? `http://localhost:3023/skills/${userId}` : 'http://localhost:3023/skills/createSkill';
+      const method = isEditing ? axios.put : axios.post;
+
+      await method(endpoint, { skills: saveData });
+
+      notification.success({
+        message: 'Success',
+        description: `Skills ${isEditing ? 'updated' : 'saved'} successfully! Click on Next Section.`,
+      });
+
       setIsEditing(false);
     } catch (error) {
-      console.error('Save Data to Backend Error:', error);
-      notification.error({
-        message: 'Error',
-        description: `Failed to save skill data: ${(error as Error).message || 'Unknown error'}`,
-      });
+      handleSaveError(error);
     }
   };
 
-  const handleEdit = () => {
-    console.log('Edit button clicked');
-    setIsEditing(true);
+  const handleSaveError = (error: unknown) => {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    notification.error({
+      message: 'Error',
+      description: `Failed to save skill data: ${errorMessage}`,
+    });
   };
 
-  const handleNextSection = () => {
-    console.log('Next Section button clicked');
-    navigate('/personal-details');
-  };
+  const handleEdit = () => setIsEditing(true);
 
-  const handlePreviousSection = () => {
-    console.log('Previous Section button clicked');
-    navigate('/academics');
-  };
+  const handleNextSection = () => navigate('/personal-details');
+
+  const handlePreviousSection = () => navigate('/academics');
 
   const handleAddSkill = () => {
     setSkillsList(prev => [...prev, { skillName: '', department: '' }]);
+    form.setFieldsValue({ skillsList: [...skillsList, { skillName: '', department: '' }] });
   };
 
   const handleRemoveSkill = (index: number) => {
-    setSkillsList(prev => prev.filter((_, i) => i !== index));
+    const updatedSkillsList = skillsList.filter((_, i) => i !== index);
+    setSkillsList(updatedSkillsList);
+    form.setFieldsValue({ skillsList: updatedSkillsList });
   };
 
   return (
-    <Form
-      form={form}
-      name="skills"
-      initialValues={{ skillsList }}
-      layout="vertical"
-    >
+    <Form form={form} name="skills" layout="vertical">
       {skillsList.map((skill, index) => (
         <Row gutter={[16, 16]} key={index}>
           <Col span={12}>
@@ -138,15 +122,9 @@ export const AddSkillsForm: React.FC = () => {
               name={['skillsList', index, 'skillName']}
               rules={[{ required: true, message: 'Please input your skill name!' }]}
             >
-              <Input 
-                disabled={!isEditing} 
-                value={skill.skillName}
-                placeholder="Enter skill name"
-                onChange={(e) => {
-                  const newSkillsList = [...skillsList];
-                  newSkillsList[index].skillName = e.target.value;
-                  setSkillsList(newSkillsList);
-                }}
+              <Input
+                disabled={!isEditing}
+                placeholder={isEditing ? 'Enter skill name' : skill.skillName}
               />
             </Form.Item>
           </Col>
@@ -156,15 +134,9 @@ export const AddSkillsForm: React.FC = () => {
               name={['skillsList', index, 'department']}
               rules={[{ required: true, message: 'Please input your department!' }]}
             >
-              <Input 
-                disabled={!isEditing} 
-                value={skill.department}
-                placeholder="Enter department"
-                onChange={(e) => {
-                  const newSkillsList = [...skillsList];
-                  newSkillsList[index].department = e.target.value;
-                  setSkillsList(newSkillsList);
-                }}
+              <Input
+                disabled={!isEditing}
+                placeholder={isEditing ? 'Enter department' : skill.department}
               />
             </Form.Item>
           </Col>

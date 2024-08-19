@@ -1,54 +1,7 @@
 import React from 'react';
+import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/template-3.css"
-
-interface Address {
-  street: string;
-  city: string;
-  state: string;
-  country: string;
-  zipcode: string;
-}
-
-interface Experience {
-  objective: string;
-  companyName: string;
-  role: string;
-  fromYear: string;
-  toYear: string;
-  description: string;
-}
-
-interface Academic {
-  institutionName: string;
-  passingYear: string;
-  qualification: string;
-  university: string;
-  percentage: string;
-}
-
-interface Skills {
-  skillName: string;
-  department: string;
-}
-
-interface PersonalDetails {
-  fatherName: string;
-  motherName: string;
-  dateOfBirth: string;
-  maritalStatus: string;
-  languagesKnown: string;
-}
-
-interface UserDetails {
-  name: string;
-  email: string;
-  mobile: string;
-  address: Address;
-  experience: Experience;
-  academic: Academic;
-  skills: Skills;
-  personalDetails: PersonalDetails;
-}
+import { UserDetails } from '../layouts/types';
 
 const Template3: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
   return (
@@ -60,13 +13,6 @@ const Template3: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
           <span>Mobile: {userDetails.mobile}</span>
         </p>
       </header>
-
-      <section className="address-section">
-        <h2>Address</h2>
-        <p>{userDetails.address.street}</p>
-        <p>{userDetails.address.city}, {userDetails.address.state}</p>
-        <p>{userDetails.address.country} - {userDetails.address.zipcode}</p>
-      </section>
 
       <section className="experience-section">
         <h2>Experience</h2>
@@ -94,11 +40,14 @@ const Template3: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
 
       <section className="personal-details-section">
         <h2>Personal Details</h2>
-        <p><strong>Father's Name:</strong> {userDetails.personalDetails.fatherName}</p>
-        <p><strong>Mother's Name:</strong> {userDetails.personalDetails.motherName}</p>
-        <p><strong>Date of Birth:</strong> {userDetails.personalDetails.dateOfBirth}</p>
-        <p><strong>Marital Status:</strong> {userDetails.personalDetails.maritalStatus}</p>
-        <p><strong>Languages Known:</strong> {userDetails.personalDetails.languagesKnown}</p>
+        <ul>
+          <li><strong>Father's Name:</strong> {userDetails.personalDetails.fatherName}</li>
+          <li><strong>Mother's Name:</strong> {userDetails.personalDetails.motherName}</li>
+          <li><strong>Date of Birth:</strong> {userDetails.personalDetails.dateOfBirth}</li>
+          <li><strong>Marital Status:</strong> {userDetails.personalDetails.maritalStatus}</li>
+          <li><strong>Languages Known:</strong> {userDetails.personalDetails.languagesKnown}</li>
+          <li><strong>Address:</strong> {`${userDetails.address.street}, ${userDetails.address.city}, ${userDetails.address.state}, ${userDetails.address.country} - ${userDetails.address.zipcode}`}</li>
+        </ul>
       </section>
     </div>
   );

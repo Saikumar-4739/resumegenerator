@@ -1,66 +1,42 @@
-/* template-2.css */
-
-/* General Styles */
 .template2 {
-  font-family: Arial, sans-serif;
-  line-height: 1.6;
-  color: #333;
   padding: 20px;
-  max-width: 800px;
-  margin: 0 auto;
-  background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  color: #333;
 }
 
-.template2 h1 {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
-  color: #2c3e50;
-}
-
-.template2 .section {
+h1 {
+  font-size: 32px;
+  font-weight: bold;
   margin-bottom: 20px;
 }
 
-.template2 h2 {
-  font-size: 1.8rem;
+.section {
+  margin-bottom: 20px;
+}
+
+.section h2 {
+  font-size: 24px;
+  font-weight: bold;
   margin-bottom: 10px;
-  color: #2980b9;
+  color: #555;
 }
 
-.template2 p {
-  font-size: 1rem;
+.section p {
   margin: 5px 0;
+  font-size: 16px;
+  color: #666;
 }
 
-/* Specific Styles for Sections */
-.template2 .section p {
-  background: #fff;
-  border: 1px solid #ddd;
-  padding: 10px;
-  border-radius: 4px;
-}
-
-.template2 .section p:first-of-type {
-  border-top: 0;
-}
-
-.template2 .section p:last-of-type {
-  border-bottom: 0;
-}
-
-/* Responsive Design */
 @media (max-width: 768px) {
-  .template2 {
-    padding: 10px;
+  h1 {
+    font-size: 28px;
   }
 
-  .template2 h1 {
-    font-size: 2rem;
+  .section h2 {
+    font-size: 20px;
   }
 
-  .template2 h2 {
-    font-size: 1.5rem;
+  .section p {
+    font-size: 14px;
   }
 }

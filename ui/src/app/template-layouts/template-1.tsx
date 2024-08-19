@@ -1,61 +1,22 @@
 import React from 'react';
 import { Card, Row, Col } from 'antd';
 import "../styles/template-1.css"
-
-interface Address {
-  street: string;
-  city: string;
-  state: string;
-  country: string;
-  zipcode: string;
-}
-
-interface Experience {
-  objective: string;
-  companyName: string;
-  role: string;
-  fromYear: string;
-  toYear: string;
-  description: string;
-}
-
-interface Academic {
-  institutionName: string;
-  passingYear: string;
-  qualification: string;
-  university: string;
-  percentage: string;
-}
-
-interface Skills {
-  skillName: string;
-  department: string;
-}
-
-interface PersonalDetails {
-  fatherName: string;
-  motherName: string;
-  dateOfBirth: string;
-  maritalStatus: string;
-  languagesKnown: string;
-}
-
-interface UserDetails {
-  name: string;
-  email: string;
-  mobile: string;
-  address: Address;
-  experience: Experience;
-  academic: Academic;
-  skills: Skills;
-  personalDetails: PersonalDetails;
-}
+import { UserDetails } from '../layouts/types';
 
 const Template1: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
   return (
     <div className="template1">
       <Card bordered={false} className="resume-card">
         <h1 className="resume-title">{userDetails.name}</h1>
+        
+        <Row className="contact-info">
+          <Col span={24}>
+            <p><strong>Email:</strong> {userDetails.email}</p>
+            <p><strong>Mobile:</strong> {userDetails.mobile}</p>
+            <p><strong>Address:</strong> {userDetails.address.street}, {userDetails.address.city}, {userDetails.address.state}, {userDetails.address.country} - {userDetails.address.zipcode}</p>
+          </Col>
+        </Row>
+
         <h2 className="objective-title">Objective</h2>
         <p className="objective-text">{userDetails.experience.objective}</p>
 
@@ -96,13 +57,6 @@ const Template1: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
             <p><strong>Date of Birth:</strong> {userDetails.personalDetails.dateOfBirth}</p>
             <p><strong>Marital Status:</strong> {userDetails.personalDetails.maritalStatus}</p>
             <p><strong>Languages Known:</strong> {userDetails.personalDetails.languagesKnown}</p>
-          </Col>
-        </Row>
-
-        <Row className="resume-section">
-          <Col span={24}>
-            <h3>Address</h3>
-            <p>{userDetails.address.street}, {userDetails.address.city}, {userDetails.address.state}, {userDetails.address.country} - {userDetails.address.zipcode}</p>
           </Col>
         </Row>
       </Card>
