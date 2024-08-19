@@ -18,7 +18,7 @@
     "@nrwl/nest": "^19.5.7",
     "@nrwl/react": "^19.5.7",
     "antd": "^5.20.0",
-    "axios": "^1.7.3",
+    "axios": "^1.7.4",
     "better-sqlite3": "^11.1.2",
     "bootstrap": "^5.3.3",
     "class-transformer": "^0.5.1",
