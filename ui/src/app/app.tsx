@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './layouts/loginpage';
 import { AppLayout } from './layouts/applayout';
-
 import { AddAcademicsForm } from './pages/academics';
 import { AddSkillsForm } from './pages/skilldetails';
 import { PersonalDetailsForm } from './pages/personaldetails';

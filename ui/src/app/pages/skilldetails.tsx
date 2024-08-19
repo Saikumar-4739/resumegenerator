@@ -191,7 +191,7 @@ export const AddSkillsForm: React.FC = () => {
           icon={<PlusOutlined />}
           style={{ marginLeft: '8px' }}
         >
-          Add More
+          Add More Skills
         </Button>
       </Form.Item>
     </Form>

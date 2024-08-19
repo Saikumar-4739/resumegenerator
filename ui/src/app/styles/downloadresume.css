@@ -1,0 +1,31 @@
+.download-page {
+  padding: 20px;
+}
+
+.button-container {
+  margin-bottom: 20px;
+}
+
+.template-selection {
+  margin-bottom: 20px;
+}
+
+.template-selection .ant-btn {
+  margin-right: 8px;
+}
+
+.resume-template, .resume-content {
+  margin-top: 20px;
+}
+
+.resume-content.show {
+  display: block;
+}
+
+.hidden {
+  display: none;
+}
+
+.show {
+  display: block;
+}

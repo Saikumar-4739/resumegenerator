@@ -251,7 +251,6 @@ export const AddAcademicsForm: React.FC = () => {
           icon={<LeftOutlined />}
           style={{ marginRight: '10px' }}
         >
-          Previous
         </Button>
         <Button
           type="primary"
@@ -266,7 +265,6 @@ export const AddAcademicsForm: React.FC = () => {
           onClick={handleNextSection}
           icon={<RightOutlined />}
         >
-          Next
         </Button>
         <Button
           type="dashed"
@@ -274,7 +272,7 @@ export const AddAcademicsForm: React.FC = () => {
           icon={<PlusOutlined />}
           style={{ marginLeft: '8px' }}
         >
-          Add More
+          Add More Qualification
         </Button>
       </Form.Item>
     </Form>

@@ -1,6 +1,11 @@
-.template1 {
+.template3 {
+  width: 210mm; /* A4 width */
+  height: 297mm; /* A4 height */
   padding: 20px;
   background-color: #f4f4f4;
+  box-sizing: border-box;
+  margin: auto;
+  overflow: hidden; /* Ensure content does not overflow */
 }
 
 .resume-card {
@@ -8,6 +13,9 @@
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  height: auto; /* Adjust height to content */
+  box-sizing: border-box;
 }
 
 .resume-title {

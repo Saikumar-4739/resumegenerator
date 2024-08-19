@@ -222,7 +222,7 @@ export const PreviewResume: React.FC = () => {
           <Input prefix={<UserOutlined />} value={userDetails.personalDetails.motherName} readOnly />
         </Item>
         <Item label="Date of Birth">
-          <Input prefix={<CalendarOutlined />} value={userDetails.personalDetails.dateOfBirth} readOnly />
+          <Input value={userDetails.personalDetails.dateOfBirth} readOnly />
         </Item>
         <Item label="Marital Status">
           <Input prefix={<FlagOutlined />} value={userDetails.personalDetails.maritalStatus} readOnly />

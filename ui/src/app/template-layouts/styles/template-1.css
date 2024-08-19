@@ -1,0 +1,89 @@
+.template1 {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  background-color: #e2dedd1f;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(3, 170, 236, 0.1);
+}
+
+h1 {
+  font-size: 32px;
+  color: #333333;
+  text-align: center;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.section {
+  margin-bottom: 20px;
+  padding: 10px;
+  border-bottom: 2px solid #007bff;
+  color: #007bff;
+}
+
+.section h2 {
+  font-size: 24px;
+  color: #007bff;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 5px;
+}
+
+.section p {
+  font-size: 16px;
+  color: #555555;
+  margin: 5px 0;
+  line-height: 1.5;
+}
+
+.section p strong {
+  font-weight: bold;
+  color: #333333;
+}
+
+.section p:last-child {
+  margin-bottom: 0;
+}
+
+div > p {
+  font-style: italic;
+  color: #444444;
+}
+
+.section p.address {
+  white-space: pre-wrap;
+  margin-bottom: 10px;
+}
+
+.section h2 {
+  margin-top: 20px;
+  font-size: 20px;
+  color: #2c3e50;
+}
+
+.section p {
+  font-size: 14px;
+  color: #34495e;
+  margin: 4px 0;
+}
+
+@media (max-width: 600px) {
+  .template2 {
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  .section h2 {
+    font-size: 18px;
+  }
+
+  .section p {
+    font-size: 14px;
+  }
+}

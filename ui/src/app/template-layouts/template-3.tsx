@@ -1,7 +1,6 @@
 import React from 'react';
-import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/template-3.css"
 import { UserDetails } from '../layouts/types';
+import "./styles/template-3.css"
 
 const Template3: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
   return (
@@ -34,7 +33,7 @@ const Template3: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
 
       <section className="skills-section">
         <h2>Skills</h2>
-        <p><strong>Skill Name:</strong> {userDetails.skills.skillName}</p>
+        <p><strong>Skills:</strong> {userDetails.skills.skillName}</p>
         <p><strong>Department:</strong> {userDetails.skills.department}</p>
       </section>
 

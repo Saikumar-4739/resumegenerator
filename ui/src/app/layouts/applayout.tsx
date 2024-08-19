@@ -10,7 +10,7 @@ import {
   EyeOutlined,
   DownloadOutlined,
 } from '@ant-design/icons';
-import "../styles/layout.css"
+import "../styles/applayout.css"
 
 const { Header, Sider, Content, Footer } = Layout;
 const { useBreakpoint } = Grid;
@@ -45,41 +45,13 @@ export const AppLayout: React.FC = () => {
   };
 
   const menuItems = [
-    {
-      key: "/user-form",
-      icon: <UserOutlined />,
-      label: <Link to="/user-form">User Form</Link>,
-    },
-    {
-      key: "/experience",
-      icon: <AppstoreAddOutlined />,
-      label: <Link to="/experience">Experience</Link>,
-    },
-    {
-      key: "/academics",
-      icon: <BookOutlined />,
-      label: <Link to="/academics">Academics</Link>,
-    },
-    {
-      key: "/skills",
-      icon: <SmileOutlined />,
-      label: <Link to="/skills">Skills</Link>,
-    },
-    {
-      key: "/personal-details",
-      icon: <FileDoneOutlined />,
-      label: <Link to="/personal-details">Personal Details</Link>,
-    },
-    {
-      key: "/preview-resume",
-      icon: <EyeOutlined />,
-      label: <Link to="/preview-resume">Preview Resume</Link>,
-    },
-    {
-      key: "/download-page",
-      icon: <DownloadOutlined />,
-      label: <Link to="/download-page">Download Resume</Link>,
-    },
+    { key: "/user-form", icon: <UserOutlined />, label: <Link to="/user-form">User Form</Link> },
+    { key: "/experience", icon: <AppstoreAddOutlined />, label: <Link to="/experience">Experience</Link> },
+    { key: "/academics", icon: <BookOutlined />, label: <Link to="/academics">Academics</Link> },
+    { key: "/skills", icon: <SmileOutlined />, label: <Link to="/skills">Skills</Link> },
+    { key: "/personal-details", icon: <FileDoneOutlined />, label: <Link to="/personal-details">Personal Details</Link> },
+    { key: "/preview-resume", icon: <EyeOutlined />, label: <Link to="/preview-resume">Preview Resume</Link> },
+    { key: "/download-page", icon: <DownloadOutlined />, label: <Link to="/download-page">Download Resume</Link> },
   ];
 
   if (currentRoute === '/login') {
@@ -91,13 +63,9 @@ export const AppLayout: React.FC = () => {
       <Header className="header">
         <div className="logo">Resume Generator</div>
         <div className="header-right">
-          <Button type="primary" onClick={handleLogout}>
-            Logout
-          </Button>
+          <Button type="primary" onClick={handleLogout}>Logout</Button>
           {!screens.md && (
-            <Button type="primary" onClick={toggleDrawer} style={{ marginLeft: '1rem' }}>
-              Menu
-            </Button>
+            <Button type="primary" onClick={toggleDrawer} style={{ marginLeft: '1rem' }}>Menu</Button>
           )}
         </div>
       </Header>
@@ -113,12 +81,12 @@ export const AppLayout: React.FC = () => {
             closable
             onClose={toggleDrawer}
             open={drawerOpen}
-            bodyStyle={{ padding: 0 }} // Correct usage here
+            styles={{ body: { padding: 0 } }}
           >
             <Menu theme="light" mode="inline" selectedKeys={[currentRoute]} items={menuItems} />
           </Drawer>
         )}
-        <Layout style={{ padding: '0 24px', minHeight: 280 }}>
+        <Layout style={{ padding: '0 24px', minHeight: '280px' }}>
           <Content
             style={{
               padding: 24,
