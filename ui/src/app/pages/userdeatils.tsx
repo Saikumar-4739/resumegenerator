@@ -259,7 +259,6 @@ export const UserDetailsForm: React.FC = () => {
                 onClick={handleNextSection}
                 style={{ marginLeft: "10px" }}
               >
-                Next
               </Button>
             </>
           )}

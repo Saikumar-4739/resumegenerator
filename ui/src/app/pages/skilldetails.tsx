@@ -24,6 +24,12 @@ export const AddSkillsForm: React.FC = () => {
     }
   }, [userId]);
 
+  useEffect(() => {
+    if (skillsList.length > 0) {
+      form.setFieldsValue({ skillsList });
+    }
+  }, [skillsList, form]);
+
   const fetchSkillsData = async (userId: string) => {
     try {
       const response = await axios.post(`http://localhost:3023/skills/${userId}`);
@@ -31,14 +37,12 @@ export const AddSkillsForm: React.FC = () => {
       if (response.status === 200) {
         const backendData: Skill[] = response.data.data || [];
         console.log('Fetched Skills Data:', backendData);
+
         if (backendData.length > 0) {
           setSkillsList(backendData);
-          form.setFieldsValue({ skillsList: backendData });
-          console.log('Form values set:', form.getFieldsValue());
         } else {
           // Handle case where no data is returned
           setSkillsList([{ skillName: '', department: '' }]);
-          form.setFieldsValue({ skillsList: [{ skillName: '', department: '' }] });
         }
         setIsEditing(false);
       } else {
@@ -46,16 +50,14 @@ export const AddSkillsForm: React.FC = () => {
       }
     } catch (error) {
       console.error('Fetch Skills Data Error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       notification.error({
         message: 'Error',
-        description: `Failed to fetch skills data: ${errorMessage}`,
+        description: `Failed to fetch skills data: ${(error as Error).message || 'Unknown error'}`,
       });
     }
   };
 
   const saveDataToBackend = async () => {
-    const userId = localStorage.getItem('userId');
     if (!userId) {
       notification.error({
         message: 'Error',
@@ -76,7 +78,7 @@ export const AddSkillsForm: React.FC = () => {
 
     try {
       if (isEditing) {
-        await axios.put(`http://localhost:3023/skills/${userId}`, { skills: saveData });
+        await axios.post(`http://localhost:3023/skills/${userId}`, { skills: saveData });
         notification.success({
           message: 'Success',
           description: 'Skills updated successfully! Click on Next Section.',
@@ -91,10 +93,9 @@ export const AddSkillsForm: React.FC = () => {
       setIsEditing(false);
     } catch (error) {
       console.error('Save Data to Backend Error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       notification.error({
         message: 'Error',
-        description: `Failed to save skill data: ${errorMessage}`,
+        description: `Failed to save skill data: ${(error as Error).message || 'Unknown error'}`,
       });
     }
   };
@@ -139,7 +140,13 @@ export const AddSkillsForm: React.FC = () => {
             >
               <Input 
                 disabled={!isEditing} 
-                placeholder={isEditing ? 'Enter skill name' : skill.skillName}
+                value={skill.skillName}
+                placeholder="Enter skill name"
+                onChange={(e) => {
+                  const newSkillsList = [...skillsList];
+                  newSkillsList[index].skillName = e.target.value;
+                  setSkillsList(newSkillsList);
+                }}
               />
             </Form.Item>
           </Col>
@@ -151,7 +158,13 @@ export const AddSkillsForm: React.FC = () => {
             >
               <Input 
                 disabled={!isEditing} 
-                placeholder={isEditing ? 'Enter department' : skill.department}
+                value={skill.department}
+                placeholder="Enter department"
+                onChange={(e) => {
+                  const newSkillsList = [...skillsList];
+                  newSkillsList[index].department = e.target.value;
+                  setSkillsList(newSkillsList);
+                }}
               />
             </Form.Item>
           </Col>

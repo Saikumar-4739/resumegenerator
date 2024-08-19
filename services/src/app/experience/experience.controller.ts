@@ -24,7 +24,7 @@ export class ExperienceController {
     return this.experienceService.deleteExperiencesByIds(req);
   }
 
-  @Post('/update')
+  @Post(':userId')
   async updateExperience(@Body() experienceData: ExperienceCreateRequest & { experienceId: number }): Promise<ExperienceResponse> {
     return this.experienceService.updateExperience(experienceData);
   }
