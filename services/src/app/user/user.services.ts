@@ -1,3 +1,4 @@
+import { ExperienceService } from './../experience/experience.services';
 import { Injectable} from '@nestjs/common';
 import { UserCreateRequest } from './models/user-create.request';
 import { UserIdRequest } from './models/userid.request';
@@ -8,11 +9,10 @@ import { AddressService } from '../address/address.services';
 import {UserRepo} from './userrepo/user.repo'
 import { UserDetailedInfoResponse } from './models/user-detailed-info.response';
 import { UserEntity } from './user.entities';
-import { ExperienceModel } from '../experience/models/exp.model';
-import { AcademicModel } from '../academics/models/academics.model';
-import { SkillModel } from '../skills/models/skills.model';
-import { PersonalDetailsModel } from '../personal-details/models/personal-details.model';
 import UserDetailedInfoModel from './models/user-detailed-info.model';
+import { AcademicService } from '../academics/academics.services';
+import { SkillService } from '../skills/skills.services';
+import { PersonalDetailsService } from '../personal-details/personal-details.services';
 
 
 
@@ -21,8 +21,12 @@ export class UserService {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   AddressRepo: any;
   constructor(
-    private UserRepo: UserRepo,
-    private addressService: AddressService
+    private userRepo: UserRepo,
+    private addressService: AddressService,
+    private experienceService: ExperienceService,
+    private academicService: AcademicService,
+    private skillService: SkillService,
+    private personalDetailService: PersonalDetailsService
   ) {}
 
   async createUser(userData: UserCreateRequest): Promise<UserResponse> {
@@ -36,7 +40,7 @@ export class UserService {
       };
     }
   
-    const existingUser = await this.UserRepo.findOne({ where: { email: userData.email } });
+    const existingUser = await this.userRepo.findOne({ where: { email: userData.email } });
     if (existingUser) {
       return {
         status: false,
@@ -51,7 +55,7 @@ export class UserService {
     userEnt.email = userData.email;
     userEnt.name = userData.uname;
     userEnt.mobile = userData.mobileNo;
-    savedUser = await this.UserRepo.save(userEnt);
+    savedUser = await this.userRepo.save(userEnt);
   } catch (error) {
     return {
       status: false,
@@ -96,7 +100,7 @@ export class UserService {
     }
 
     try {
-      await this.UserRepo.delete(userIds);
+      await this.userRepo.delete(userIds);
       return {
         status: true,
         internalMessage: 'Users deleted successfully',
@@ -126,7 +130,7 @@ export class UserService {
         //     };
         // }
 
-        const userToUpdate = await this.UserRepo.findOne({ where: { userId: req.userId } });
+        const userToUpdate = await this.userRepo.findOne({ where: { userId: req.userId } });
 
         if (!userToUpdate) {
             return {
@@ -155,7 +159,7 @@ export class UserService {
         }
 
         // Save updated user
-        const updatedUser = await this.UserRepo.save(userToUpdate);
+        const updatedUser = await this.userRepo.save(userToUpdate);
 
       
         const createdate = new Date(updatedUser.createdate);
@@ -186,12 +190,16 @@ export class UserService {
   }
 
 
-  async getUsersByUserIds(req: { userId: number[] }): Promise<UserDetailedInfoResponse> {
+  async getUsersByUserIds(req: { userId: number }): Promise<UserDetailedInfoResponse> {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const userIds = req.userId;
-      const users = await this.UserRepo.getUsers(req.userId);
-
+      const users = [];
+      // for (const id of [req.userId]) {
+        const user = await this.userRepo.findOne({ where: { userId : req.userId } });
+        if (user) {
+          users.push(user);
+        }
+      // }
+  
       if (users.length === 0) {
         return {
           status: false,
@@ -200,56 +208,24 @@ export class UserService {
           errorCode: 404,
         };
       }
-
-      const userDetailedModels: UserDetailedInfoModel[] = users.map(user => {
+  
+      const userDetailedModels: UserDetailedInfoModel[] = await Promise.all(users.map(async (user) => {
         const userDetailedModel = new UserDetailedInfoModel();
         userDetailedModel.userId = user.userId;
         userDetailedModel.name = user.name;
         userDetailedModel.email = user.email;
         userDetailedModel.mobile = user.mobile;
         userDetailedModel.createdate = user.createdate;
-
-        const addr = new AddressModel();
-        addr.street = user.street;
-        addr.city = user.city;
-        addr.state = user.state;
-        addr.country = user.country;
-        addr.zipcode = user.zipcode.toString();
-        userDetailedModel.address = addr;
-
-        const expe = new ExperienceModel();
-        expe.objective = user.objective;
-        expe.companyName = user.companyName;
-        expe.role = user.role;
-        expe.fromYear = user.fromYear;
-        expe.toYear = user.toYear;
-        expe.description = user.description;
-        userDetailedModel.experience = expe;
-
-        const acade = new AcademicModel();
-        acade.institutionName = user.institutionName;
-        acade.passingYear = user.passingYear;
-        acade.qualification = user.qualification;
-        acade.university = user.university;
-        acade.percentage = user.percentage;
-        userDetailedModel.academic = acade;
-
-        const skill = new SkillModel();
-        skill.skillName = user.skillName;
-        skill.department = user.department;
-        userDetailedModel.skills = skill;
-
-        const pdetails = new PersonalDetailsModel();
-        pdetails.fatherName = user.fatherName;
-        pdetails.motherName = user.motherName;
-        pdetails.dateOfBirth = user.dateOfBirth;
-        pdetails.maritalStatus = user.maritalStatus;
-        pdetails.languagesKnown = user.languagesKnown;
-        userDetailedModel.personalDetails = pdetails;
-
+  
+        userDetailedModel.address = (await this.addressService.getAddressOfUserId(user.userId));
+        userDetailedModel.experience = (await this.experienceService.getExpByUserId(user.userId)).data;
+        userDetailedModel.academic = (await this.academicService.getAcademicsByUserId(user.userId)).data;
+        userDetailedModel.skills = (await this.skillService.getSkillsByUserId(user.userId)).data;
+        userDetailedModel.personalDetails = (await this.personalDetailService.getPersonalDetailsByUserId(user.userId)).data[0];
+  
         return userDetailedModel;
-      });
-
+      }));
+  
       return {
         status: true,
         internalMessage: 'Users retrieved successfully',
@@ -266,10 +242,11 @@ export class UserService {
       };
     }
   }
+  
 
   async getUserById(userId: number): Promise<UserResponse> {
     try {
-      const users = await this.UserRepo.getUsers([userId]);
+      const users = await this.userRepo.getUsers([userId]);
       console.log('User fetched:', users);
   
       if (!users || users.length === 0) {

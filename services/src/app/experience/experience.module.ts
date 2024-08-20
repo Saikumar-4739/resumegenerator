@@ -10,5 +10,6 @@ import { Experienceentities } from './experience.entities';
   imports: [TypeOrmModule.forFeature([Experienceentities, UserRepo])],
   providers: [ExperienceService, UserRepo],
   controllers: [ExperienceController],
+  exports: [ExperienceService]
 })
 export class ExperienceModule {}

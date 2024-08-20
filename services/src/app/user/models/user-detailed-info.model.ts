@@ -13,9 +13,9 @@ class UserDetailedInfoModel {
   mobile: string;
   createdate: Date;
   address: AddressModel;
-  experience: ExperienceModel; 
-  academic: AcademicModel; 
-  skills: SkillModel; 
+  experience: ExperienceModel[]; 
+  academic: AcademicModel[]; 
+  skills: SkillModel[]; 
   personalDetails: PersonalDetailsModel;
 }
 

@@ -15,8 +15,8 @@ export class UserController {
     return this.userService.createUser(userData);
   }
 
-  @Post('/getUsersByUserIds')
-  async getUsersByUserIds(@Body() req:  { userId: number[] }): Promise<UserDetailedInfoResponse> {
+  @Post('/getUsersByUserIds/:userId')
+  async getUsersByUserIds(@Body() req:  { userId: number }): Promise<UserDetailedInfoResponse> {
     return this.userService.getUsersByUserIds(req);
   }
 

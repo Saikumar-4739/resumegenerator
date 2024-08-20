@@ -8,5 +8,6 @@ import PersonalDetailsEntities from './personal-details.entities';
   imports: [TypeOrmModule.forFeature([PersonalDetailsEntities])],
   providers: [PersonalDetailsService],
   controllers: [PersonalDetailsController],
+  exports: [PersonalDetailsService]
 })
 export class PersonalDetailsModule {}

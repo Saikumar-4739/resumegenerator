@@ -49,7 +49,13 @@ export class AddressService {
     const address = await this.addressRepository.findOne({
       where: { userId: userId },
     });
-    return address;
+    const addr = new AddressModel();
+    addr.street = address.street;
+    addr.city = address.city;
+    addr.state = address.state;
+    addr.country = address.country;
+    addr.zipcode = address.zipcode;
+    return addr;
   }
 
   async updateAddress(req: AddressModel): Promise<AddressResponse> {

@@ -10,5 +10,6 @@ import { AcademicEntities } from './academics.entities';
   imports: [TypeOrmModule.forFeature([AcademicEntities])],
   providers: [AcademicService],
   controllers: [AcademicController],
+  exports: [AcademicService]
 })
 export class AcademicModule {}

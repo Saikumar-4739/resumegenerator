@@ -9,10 +9,13 @@ import "../styles/downloadresume.css";
 import Template1 from '../template-layouts/template-1';
 import Template2 from '../template-layouts/template-2';
 import Template3 from '../template-layouts/template-3';
+import Template4 from '../template-layouts/template-4';
+import Template5 from '../template-layouts/template-5';
+import Template6 from '../template-layouts/template-6';
 import { UserDetails } from './types';
 
 export const DownloadPage: React.FC = () => {
-  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+  const [userDetails, setUserDetails] = useState<UserDetails[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<number>(1);
@@ -26,13 +29,11 @@ export const DownloadPage: React.FC = () => {
           throw new Error("User ID is not available");
         }
 
-        const response = await axios.post('http://localhost:3023/users/getUsersByUserIds', {
-          userId: [userId],
-        });
+        const response = await axios.post(`http://localhost:3023/users/getUsersByUserIds/${userId}`);
 
         if (response.data.status) {
-          const user = response.data.data[0];
-          setUserDetails(user);
+          const users = response.data.data; // Assuming this is an array of user details
+          setUserDetails(users);
         } else {
           throw new Error(response.data.internalMessage || "Failed to fetch user details");
         }
@@ -53,7 +54,7 @@ export const DownloadPage: React.FC = () => {
   }, []);
 
   const handleDownload = async () => {
-    if (!userDetails) return;
+    if (!userDetails.length) return;
 
     const resumeContent = document.getElementById("resume-content");
 
@@ -114,17 +115,31 @@ export const DownloadPage: React.FC = () => {
     navigate("/preview-resume");
   };
 
-  const renderTemplate = (templateNumber: number) => {
+  const renderTemplate = (templateNumber: number, user: UserDetails) => {
     switch (templateNumber) {
       case 1:
-        return <Template1 userDetails={userDetails!} />;
+        return <Template1 userDetails={user} />;
       case 2:
-        return <Template2 userDetails={userDetails!} />;
+        return <Template2 userDetails={user} />;
       case 3:
-        return <Template3 userDetails={userDetails!} />;
+        return <Template3 userDetails={user} />;
+      case 4:
+        return <Template4 userDetails={user} />;
+      case 5:
+        return <Template5 userDetails={user} />;
+      case 6:
+        return <Template6 userDetails={user} />;
       default:
         return null;
     }
+  };
+
+  const renderTemplates = () => {
+    return userDetails.map((user, index) => (
+      <div key={index} className="resume-content">
+        {renderTemplate(selectedTemplate, user)}
+      </div>
+    ));
   };
 
   if (loading) {
@@ -135,7 +150,7 @@ export const DownloadPage: React.FC = () => {
     return <div>Error: {error}</div>;
   }
 
-  if (!userDetails) {
+  if (!userDetails.length) {
     return <div>No user details available</div>;
   }
 
@@ -187,8 +202,8 @@ export const DownloadPage: React.FC = () => {
           Template 6
         </Button>
       </div>
-      <div className="resume-content" id="resume-content">
-        {renderTemplate(selectedTemplate)}
+      <div id="resume-content">
+        {renderTemplates()}
       </div>
     </div>
   );

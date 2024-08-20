@@ -12,15 +12,13 @@ import {
   CalendarOutlined,
   TrophyOutlined,
   FlagOutlined,
-  ReadOutlined,
   GlobalOutlined,
   SolutionOutlined,
-  ArrowRightOutlined,
-  SaveOutlined,
-  ArrowLeftOutlined,
   PercentageOutlined,
   LeftOutlined,
   RightOutlined,
+  ReadOutlined,
+  SaveOutlined,
 } from "@ant-design/icons";
 import "../styles/previewresume.css";
 import axios from "axios";
@@ -79,34 +77,32 @@ interface UserDetails {
   email: string;
   mobile: string;
   address: Address;
-  experience: Experience;
-  academic: Academic;
-  skills: Skills;
+  experience: Experience[];
+  academic: Academic[];
+  skills: Skills[];
   personalDetails: PersonalDetails;
   declaration: Declaration;
 }
 
 export const PreviewResume: React.FC = () => {
-  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+  const [userDetailsList, setUserDetailsList] = useState<UserDetails[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentUserIndex, setCurrentUserIndex] = useState<number>(0);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const userId = parseInt(localStorage.getItem("userId") || "0");
+        const userId = localStorage.getItem("userId");
         if (!userId) {
           throw new Error("User ID is not available");
         }
 
-        const response = await axios.post('http://localhost:3023/users/getUsersByUserIds', {
-          userId: [userId],
-        });
+        const response = await axios.post(`http://localhost:3023/users/getUsersByUserIds/${userId}`);
 
         if (response.data.status) {
-          const user = response.data.data[0];
-          setUserDetails(user);
+          setUserDetailsList(response.data.data);
         } else {
           throw new Error(response.data.internalMessage || "Failed to fetch user details");
         }
@@ -126,16 +122,16 @@ export const PreviewResume: React.FC = () => {
     fetchUserDetails();
   }, []);
 
-  const handlePrevious = () => {
+  const handlePreviousUser = () => {
     navigate("/personal-details");
   };
 
-  const handleNextSection = () => {
+  const handleNextUser = () => {
     navigate("/download-page");
   };
 
   const handleEdit = () => {
-    navigate("/user-form"); // Navigate to the UserForm component
+    navigate("/user-form");
   };
 
   if (loading) {
@@ -146,9 +142,11 @@ export const PreviewResume: React.FC = () => {
     return <div>Error: {error}</div>;
   }
 
-  if (!userDetails) {
+  if (userDetailsList.length === 0) {
     return <div>No user details available</div>;
   }
+
+  const userDetails = userDetailsList[currentUserIndex];
 
   return (
     <div className="resume-preview">
@@ -178,45 +176,64 @@ export const PreviewResume: React.FC = () => {
         <Item label="Zipcode">
           <Input prefix={<GlobalOutlined />} value={userDetails.address.zipcode} readOnly />
         </Item>
-        <Item label="Objective">
-          <Input prefix={<ProfileOutlined />} value={userDetails.experience.objective} readOnly />
-        </Item>
-        <Item label="Company Name">
-          <Input prefix={<BankOutlined />} value={userDetails.experience.companyName} readOnly />
-        </Item>
-        <Item label="Role">
-          <Input prefix={<IdcardOutlined />} value={userDetails.experience.role} readOnly />
-        </Item>
-        <Item label="From Year">
-          <Input prefix={<CalendarOutlined />} value={userDetails.experience.fromYear} readOnly />
-        </Item>
-        <Item label="To Year">
-          <Input prefix={<CalendarOutlined />} value={userDetails.experience.toYear} readOnly />
-        </Item>
-        <Item label="Description">
-          <Input prefix={<SolutionOutlined />} value={userDetails.experience.description} readOnly />
-        </Item>
-        <Item label="Institution Name">
-          <Input prefix={<ReadOutlined />} value={userDetails.academic.institutionName} readOnly />
-        </Item>
-        <Item label="Passing Year">
-          <Input prefix={<CalendarOutlined />} value={userDetails.academic.passingYear} readOnly />
-        </Item>
-        <Item label="Qualification">
-          <Input prefix={<TrophyOutlined />} value={userDetails.academic.qualification} readOnly />
-        </Item>
-        <Item label="University">
-          <Input prefix={<GlobalOutlined />} value={userDetails.academic.university} readOnly />
-        </Item>
-        <Item label="Percentage">
-          <Input prefix={<PercentageOutlined />} value={userDetails.academic.percentage} readOnly />
-        </Item>
-        <Item label="Skill Name">
-          <Input prefix={<IdcardOutlined />} value={userDetails.skills.skillName} readOnly />
-        </Item>
-        <Item label="Department">
-          <Input prefix={<GlobalOutlined />} value={userDetails.skills.department} readOnly />
-        </Item>
+        
+        {userDetails.experience.map((exp, index) => (
+          <React.Fragment key={index}>
+            <h3>Experience {index + 1}</h3>
+            <Item label="Objective">
+              <Input prefix={<ProfileOutlined />} value={exp.objective} readOnly />
+            </Item>
+            <Item label="Company Name">
+              <Input prefix={<BankOutlined />} value={exp.companyName} readOnly />
+            </Item>
+            <Item label="Role">
+              <Input prefix={<IdcardOutlined />} value={exp.role} readOnly />
+            </Item>
+            <Item label="From Year">
+              <Input prefix={<CalendarOutlined />} value={exp.fromYear} readOnly />
+            </Item>
+            <Item label="To Year">
+              <Input prefix={<CalendarOutlined />} value={exp.toYear} readOnly />
+            </Item>
+            <Item label="Description">
+              <Input prefix={<SolutionOutlined />} value={exp.description} readOnly />
+            </Item>
+          </React.Fragment>
+        ))}
+
+        {userDetails.academic.map((acad, index) => (
+          <React.Fragment key={index}>
+            <h3>Academic {index + 1}</h3>
+            <Item label="Institution Name">
+              <Input prefix={<ReadOutlined />} value={acad.institutionName} readOnly />
+            </Item>
+            <Item label="Passing Year">
+              <Input prefix={<CalendarOutlined />} value={acad.passingYear} readOnly />
+            </Item>
+            <Item label="Qualification">
+              <Input prefix={<TrophyOutlined />} value={acad.qualification} readOnly />
+            </Item>
+            <Item label="University">
+              <Input prefix={<GlobalOutlined />} value={acad.university} readOnly />
+            </Item>
+            <Item label="Percentage">
+              <Input prefix={<PercentageOutlined />} value={acad.percentage} readOnly />
+            </Item>
+          </React.Fragment>
+        ))}
+
+        {userDetails.skills.map((skill, index) => (
+          <React.Fragment key={index}>
+            <h3>Skill {index + 1}</h3>
+            <Item label="Skill Name">
+              <Input prefix={<IdcardOutlined />} value={skill.skillName} readOnly />
+            </Item>
+            <Item label="Department">
+              <Input prefix={<GlobalOutlined />} value={skill.department} readOnly />
+            </Item>
+          </React.Fragment>
+        ))}
+
         <Item label="Father's Name">
           <Input prefix={<UserOutlined />} value={userDetails.personalDetails.fatherName} readOnly />
         </Item>
@@ -232,12 +249,15 @@ export const PreviewResume: React.FC = () => {
         <Item label="Languages Known">
           <Input prefix={<GlobalOutlined />} value={userDetails.personalDetails.languagesKnown} readOnly />
         </Item>
+
         <Form.Item {...tailLayout}>
           <Button
             type="default"
             icon={<LeftOutlined />}
-            onClick={handlePrevious}
+            onClick={handlePreviousUser}
+            disabled={currentUserIndex === 0}
           >
+            Previous
           </Button>
           <Button
             type="primary"
@@ -250,8 +270,10 @@ export const PreviewResume: React.FC = () => {
           <Button
             type="default"
             icon={<RightOutlined />}
-            onClick={handleNextSection}
+            onClick={handleNextUser}
+            disabled={currentUserIndex === userDetailsList.length - 1}
           >
+            Next
           </Button>
         </Form.Item>
       </Form>

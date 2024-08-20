@@ -1,0 +1,28 @@
+.template4 {
+    font-family: Arial, sans-serif;
+    background-color: #e7d5d500;
+    padding: 20px;
+    color: #333;
+  }
+  
+  .name {
+    font-size: 36px;
+    margin-bottom: 10px;
+    color: rgb(5, 5, 5);
+  }
+  
+  .section {
+    margin-bottom: 20px;
+  }
+  
+  .contact-info {
+    font-size: 18px;
+  }
+  
+  .section h2 {
+    color: #0056b3;
+  }
+
+.names{
+  color: black;
+}

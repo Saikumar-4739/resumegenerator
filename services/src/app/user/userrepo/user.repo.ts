@@ -12,6 +12,9 @@ import PersonalDetailsEntities from "../../personal-details/personal-details.ent
 
 @Injectable()
 export class UserRepo extends Repository <UserEntity> {
+    getExpByUserId(userId: number): import("../../experience/models/exp.model").ExperienceModel[] | PromiseLike<import("../../experience/models/exp.model").ExperienceModel[]> {
+      throw new Error('Method not implemented.');
+    }
     constructor(private datasource: DataSource) {
         super(UserEntity, datasource.createEntityManager());
     }

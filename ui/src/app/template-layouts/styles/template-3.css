@@ -1,86 +1,96 @@
+/* styles/template-3.css */
+
 .template3 {
-  width: 210mm; /* A4 width */
-  height: 297mm; /* A4 height */
+  font-family: 'Arial', sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
   padding: 20px;
-  background-color: #f4f4f4;
-  box-sizing: border-box;
-  margin: auto;
-  overflow: hidden; /* Ensure content does not overflow */
-}
-
-.resume-card {
-  padding: 20px;
-  background-color: #fff;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  height: auto; /* Adjust height to content */
-  box-sizing: border-box;
+  background-color: #f9f9f9;
 }
 
-.resume-title {
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.name {
   font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 10px;
   color: #333;
+  margin-bottom: 10px;
 }
 
 .contact-info {
-  margin-bottom: 20px;
+  font-size: 16px;
+  color: #f5ebeb;
 }
 
-.contact-info p {
-  margin: 5px 0;
+.contact-info span {
+  display: block;
+  margin-bottom: 5px;
+}
+
+section {
+  margin-bottom: 30px;
+}
+
+h2 {
+  font-size: 22px;
+  color: #444;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 5px;
+}
+
+p {
   font-size: 16px;
   color: #555;
+  margin-bottom: 10px;
 }
 
-.objective-title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 10px;
+strong {
   color: #333;
 }
 
-.objective-text {
-  font-size: 16px;
-  margin-bottom: 20px;
-  color: #666;
+.skills-section,
+.personal-details-section {
+  margin-bottom: 30px;
 }
 
-.resume-section {
-  margin-bottom: 20px;
+ul {
+  list-style-type: none;
+  padding-left: 0;
 }
 
-.resume-section h3 {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-.resume-section p {
-  margin: 5px 0;
+ul li {
   font-size: 16px;
   color: #555;
+  margin-bottom: 10px;
 }
 
-.resume-section p strong {
+ul li strong {
   color: #333;
 }
 
-@media (max-width: 768px) {
-  .resume-title {
+@media (max-width: 600px) {
+  .template3 {
+    padding: 15px;
+  }
+
+  .name {
     font-size: 24px;
   }
 
-  .contact-info p,
-  .objective-text,
-  .resume-section p {
+  .contact-info {
     font-size: 14px;
   }
 
-  .resume-section h3 {
-    font-size: 18px;
+  h2 {
+    font-size: 20px;
+  }
+
+  p, ul li {
+    font-size: 14px;
   }
 }

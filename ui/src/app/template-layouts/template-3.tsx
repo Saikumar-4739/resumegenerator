@@ -6,7 +6,7 @@ const Template3: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
   return (
     <div className="template3">
       <header className="header">
-        <h1>{userDetails.name}</h1>
+        <h1 className='name'>{userDetails.name}</h1>
         <p className="contact-info">
           <span>Email: {userDetails.email}</span>
           <span>Mobile: {userDetails.mobile}</span>
