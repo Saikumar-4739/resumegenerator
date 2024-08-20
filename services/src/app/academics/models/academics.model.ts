@@ -1,4 +1,4 @@
-export class AcademicModel {
+export class AcademicModel  {
     institutionName: string;
     passingYear: number;
     qualification: string;

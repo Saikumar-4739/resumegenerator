@@ -1,152 +1,81 @@
-/* layout.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500&display=swap');
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css");
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
+:root {
+  --primary-color: #fff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 14px;
+  background: rgba(1, 1, 31, 0.884); /* Darker background for side navigation */
+  color: #fff;
   }
-  
-  .header {
-    background: #333; /* Dark header color */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-    color: #fff;
-  }
-  
-  .header .logo {
-    font-size: 20px;
-    font-weight: bold;
-    color: #fff;
-  }
-  
-  .header-right {
-    display: flex;
-    align-items: center;
-  }
-  
-  .site-layout-background {
-    background: #f0f2f5; /* Light gray background for the sider */
-  }
-  
-  .ant-layout-sider {
-    height: 100vh;
-    background: #f0f2f5 !important; /* Ensuring the sider is light gray */
-  }
-  
-  .ant-menu-inline .ant-menu-item {
-    padding-left: 24px !important;
-  }
-  
-  .ant-menu-item a {
-    color: rgba(0, 0, 0, 0.85);
-    font-weight: 500;/* Basic Reset */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
-    }
-    
-    .header {
-      background: #001529; /* Dark blue background */
-      color: #fff;
-      padding: 0 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 64px;
-    }
-    
-    .logo {
-      font-size: 20px;
-      font-weight: bold;
-    }
-    
-    .header-right {
-      display: flex;
-      align-items: center;
-    }
-    
-    .header-right .ant-btn {
-      margin-left: 16px;
-    }
-    
-    .site-layout-background {
-      background: #fff;
-    }
-    
-    .sider {
-      background: #fff;
-      border-right: 1px solid #ddd;
-    }
-    
-    .site-layout {
-      padding: 24px;
-    }
-    
-    .site-layout .ant-layout-content {
-      background: #fff;
-      padding: 24px;
-      min-height: 280px;
-    }
-    
-    .footer {
-      text-align: center;
-      background: #001529;
-      color: #fff;
-      padding: 16px;
-      position: fixed;
-      width: 100%;
-      bottom: 0;
-    }
-    
-    /* Responsive Styles */
-    @media (max-width: 767px) {
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      
-      .header-right {
-        margin-top: 8px;
-      }
-    
-      .sider {
-        display: none; /* Hide the sidebar on small screens */
-      }
-    
-      .drawer .ant-drawer-body {
-        padding: 0; /* Ensure no padding in the drawer */
-      }
-      
-      .footer {
-        position: static;
-      }
-    }
-    
-    @media (min-width: 768px) {
-      .drawer {
-        display: none; /* Hide the drawer on larger screens */
-      }
-    }
-    
-  }
-  
-  .ant-menu-item a:hover {
-    color: #1890ff;
-  }
-  
-  .ant-layout-content {
-    background: #fff;
-    padding: 24px;
-    margin: 0;
-    min-height: 280px;
-    border-radius: 8px; /* Adding some border-radius for a better look */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Adding some shadow for depth */
-  }
-  
+
+.header .logo {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.site-layout-background {
+  background: rgba(0, 0, 0, 0.6); /* Darker background for side navigation */
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(3px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.site-layout-background .ant-menu {
+  background: transparent;
+  border-right: none;
+}
+
+.site-layout-background .ant-menu-item-selected {
+  background-color: rgba(255, 255, 255, 0.2); /* Highlight color for selected item */
+}
+
+.site-layout-background .ant-menu-item,
+.site-layout-background .ant-menu-item a {
+  color: white; /* Text color for menu items */
+}
+
+.site-layout-background .ant-menu-item:hover,
+.site-layout-background .ant-menu-item a:hover {
+  color: #ddd; /* Lighter color on hover */
+}
+
+.site-layout-background .ant-menu-item-selected a {
+  color: #fff; /* Text color for selected menu item */
+}
+
+
+/* Footer styles */
+.ant-layout-footer {
+  text-align: center;
+  size: 100%;
+  padding: 16px;
+  background: white;
+  color: #06010a;
+}
+
+/* Responsive Drawer styles */
+.ant-drawer-body {
+  background: rgba(223, 221, 221, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(3px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}

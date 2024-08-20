@@ -10,7 +10,7 @@ import {
   EyeOutlined,
   DownloadOutlined,
 } from '@ant-design/icons';
-import "../styles/applayout.css"
+import "../styles/applayout.css";
 
 const { Header, Sider, Content, Footer } = Layout;
 const { useBreakpoint } = Grid;
@@ -76,15 +76,16 @@ export const AppLayout: React.FC = () => {
           </Sider>
         ) : (
           <Drawer
-            title="Menu"
-            placement="left"
-            closable
-            onClose={toggleDrawer}
-            open={drawerOpen}
-            styles={{ body: { padding: 0 } }}
-          >
-            <Menu theme="light" mode="inline" selectedKeys={[currentRoute]} items={menuItems} />
-          </Drawer>
+  title="Menu"
+  placement="left"
+  closable
+  onClose={toggleDrawer}
+  open={drawerOpen}
+  styles={{ body: { padding: 0 } }}
+>
+  <Menu theme="light" mode="inline" selectedKeys={[currentRoute]} items={menuItems} />
+</Drawer>
+
         )}
         <Layout style={{ padding: '0 24px', minHeight: '280px' }}>
           <Content

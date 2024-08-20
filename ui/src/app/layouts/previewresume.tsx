@@ -127,7 +127,7 @@ export const PreviewResume: React.FC = () => {
   }, []);
 
   const handlePrevious = () => {
-    navigate("/declaration");
+    navigate("/personal-details");
   };
 
   const handleNextSection = () => {

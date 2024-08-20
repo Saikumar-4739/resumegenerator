@@ -139,7 +139,7 @@ export const Experience: React.FC = () => {
 
   const handleNavigation = (direction: 'prev' | 'next') => {
     if (direction === 'prev') {
-      navigate('/previous-page');
+      navigate('/user-form');
     } else {
       navigate('/academics');
     }

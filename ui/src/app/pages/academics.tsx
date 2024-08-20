@@ -41,7 +41,6 @@ export const AddAcademicsForm: React.FC = () => {
       const backendData: Academics[] = response.data.data;
       setAcademicList(backendData);
       form.setFieldsValue({ academicList: backendData });
-      setIsEditing(false); // Default to view mode after fetching data
     } catch {
       notification.warning({
         message: 'Error',

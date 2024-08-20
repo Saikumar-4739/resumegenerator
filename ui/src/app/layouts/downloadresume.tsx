@@ -168,6 +168,24 @@ export const DownloadPage: React.FC = () => {
         >
           Template 3
         </Button>
+        <Button
+          type={selectedTemplate === 4 ? 'primary' : 'default'}
+          onClick={() => setSelectedTemplate(4)}
+        >
+          Template 4
+        </Button>
+        <Button
+          type={selectedTemplate === 5 ? 'primary' : 'default'}
+          onClick={() => setSelectedTemplate(5)}
+        >
+          Template 5
+        </Button>
+        <Button
+          type={selectedTemplate === 6 ? 'primary' : 'default'}
+          onClick={() => setSelectedTemplate(6)}
+        >
+          Template 6
+        </Button>
       </div>
       <div className="resume-content" id="resume-content">
         {renderTemplate(selectedTemplate)}
