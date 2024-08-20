@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, notification, Row, Col } from 'antd';
+import { Form, Input, Button, message, Row, Col } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { LeftOutlined, SaveOutlined, EditOutlined, RightOutlined, PlusOutlined } from '@ant-design/icons';
@@ -17,6 +17,7 @@ export const Experience: React.FC = () => {
   const navigate = useNavigate();
   const [forms, setForms] = useState<Experience[]>([]);
   const [isEditing, setIsEditing] = useState<boolean[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [userId, setUserId] = useState<string | null>(localStorage.getItem('userId'));
 
   useEffect(() => {
@@ -24,28 +25,27 @@ export const Experience: React.FC = () => {
       fetchExperienceData(userId);
     } else {
       setForms([{ objective: '', companyName: '', role: '', fromYear: '', toYear: '', description: '' }]);
-      setIsEditing([false]);
+      setIsEditing([true]);
     }
   }, [userId]);
 
   const fetchExperienceData = async (userId: string) => {
     try {
       const response = await axios.post(`http://localhost:3023/experiences/${userId}`);
-      if (response.data.data && response.data.data.length > 0) {
+      console.log('API Response:', response.data);
+
+      if (response.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
         const fetchedData = response.data.data;
         setForms(fetchedData);
         setIsEditing(fetchedData.map(() => false));
       } else {
+        message.warning('No experience data found. You can add new experience entries.');
         setForms([{ objective: '', companyName: '', role: '', fromYear: '', toYear: '', description: '' }]);
-        setIsEditing([false]);
+        setIsEditing([true]);
       }
     } catch (error) {
       console.error('Fetch Error:', error);
-      notification.error({
-        message: 'Error',
-        description: 'Failed to fetch experience data',
-        className: 'custom-notification',
-      });
+      message.error(`Failed to fetch experience data. Error: ${error.message || 'Unknown error'}`);
     }
   };
 
@@ -57,43 +57,34 @@ export const Experience: React.FC = () => {
 
   const handleSave = async (index: number) => {
     if (!userId) {
-      notification.error({
-        message: 'Error',
-        description: 'User ID is not available.',
-        className: 'custom-notification',
-      });
+      message.error('User ID is not available.');
       return;
     }
 
     try {
       const experience = forms[index];
-      const endpoint = `http://localhost:3023/experiences/${userId}`;
+      const endpoint = `http://localhost:3023/experiences/update/${userId}`;
       const response = await axios.post(endpoint, experience);
 
-      if (response.status === 200) {
+      // Log the response for debugging
+      console.log('Update Response Status:', response.status);
+      console.log('Update Response Data:', response.data);
+
+      if (response.status === 200 || response.status === 201 || response.status === 204) {
+        // Success
         const updatedEditing = [...isEditing];
         updatedEditing[index] = false;
         setIsEditing(updatedEditing);
-        notification.success({
-          message: 'Success',
-          description: 'Experience data updated successfully.',
-          className: 'custom-notification',
-        });
+        message.success('Experience data updated successfully.');
         fetchExperienceData(userId); // Re-fetch data to ensure all forms are updated
       } else {
-        notification.error({
-          message: 'Error',
-          description: 'Failed to update experience data. Server response was not OK.',
-          className: 'custom-notification',
-        });
+        // Unexpected status code
+        message.error(`Failed to update experience data. Unexpected server response: ${response.status}`);
       }
     } catch (error) {
+      // Log detailed error information
       console.error('Update Error:', error);
-      notification.error({
-        message: 'Error',
-        description: 'Failed to save experience data. Please check the console for more details.',
-        className: 'custom-notification',
-      });
+      message.error(`Failed to save experience data. Error: ${error.message || 'Unknown error'}`);
     }
   };
 
@@ -108,32 +99,21 @@ export const Experience: React.FC = () => {
     setIsEditing([...isEditing, true]);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const saveAllExperiences = async () => {
     if (!userId) {
-      notification.error({
-        message: 'Error',
-        description: 'User ID is not available.',
-        className: 'custom-notification',
-      });
+      message.error('User ID is not available.');
       return;
     }
 
     try {
       const endpoint = `http://localhost:3023/experiences/${userId}`;
       await Promise.all(forms.map((experience) => axios.post(endpoint, experience)));
-      notification.success({
-        message: 'Success',
-        description: 'All experience data saved successfully.',
-        className: 'custom-notification',
-      });
+      message.success('All experience data saved successfully.');
       fetchExperienceData(userId); // Re-fetch data to ensure all forms are updated
     } catch (error) {
       console.error('Save Error:', error);
-      notification.error({
-        message: 'Error',
-        description: 'Failed to save experience data. Please check the console for more details.',
-        className: 'custom-notification',
-      });
+      message.error(`Failed to save experience data. Error: ${error.message || 'Unknown error'}`);
     }
   };
 
@@ -213,8 +193,7 @@ export const Experience: React.FC = () => {
             </Form.Item>
           </Form>
         ))}
-        
-        {/* Add Experience button is always visible */}
+
         <Form
           name="add-experience"
           layout="vertical"

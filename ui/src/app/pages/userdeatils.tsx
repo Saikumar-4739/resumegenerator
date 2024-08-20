@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Row, Col, Typography, notification } from "antd";
+import { Form, Input, Button, Row, Col, Typography, message } from "antd";
 import { SaveOutlined, EditOutlined, RightOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -52,19 +52,13 @@ export const UserDetailsForm: React.FC = () => {
       form.setFieldsValue(backendData);
       setIsEditing(false);
     } catch (error) {
-      notification.error({
-        message: 'Error',
-        description: 'Failed to retrieve user details.',
-      });
+      message.error('Failed to retrieve user details.');
     }
   };
 
   const saveDataToBackend = async () => {
     if (!userId) {
-      notification.error({
-        message: 'Error',
-        description: 'User ID not found. Please make sure you have saved user details.',
-      });
+      message.error('User ID not found. Please make sure you have saved user details.');
       return;
     }
 
@@ -74,16 +68,10 @@ export const UserDetailsForm: React.FC = () => {
         : "http://localhost:3023/users/createuser";
 
       await axios.post(endpoint, userDetails);
-      notification.success({
-        message: isEditing ? 'Data Updated' : 'Data Saved',
-        description: `User details have been ${isEditing ? 'updated' : 'saved'} successfully.`,
-      });
+      message.success(`User details have been ${isEditing ? 'updated' : 'saved'} successfully.`);
       setIsEditing(false);
     } catch (error) {
-      notification.error({
-        message: 'Error',
-        description: 'Failed to save data. Please try again.',
-      });
+      message.error('Failed to save data. Please try again.');
     }
   };
 
@@ -260,6 +248,7 @@ export const UserDetailsForm: React.FC = () => {
                 onClick={handleNextSection}
                 style={{ marginLeft: "10px" }}
               >
+                Next
               </Button>
             </>
           )}

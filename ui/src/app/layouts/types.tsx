@@ -42,9 +42,9 @@ export interface Address {
     email: string;
     mobile: string;
     address: Address;
-    experience: Experience;
-    academic: Academic;
-    skills: Skills;
+    experience: Experience[];
+    academic: Academic[];
+    skills: Skills[];
     personalDetails: PersonalDetails;
   }
   

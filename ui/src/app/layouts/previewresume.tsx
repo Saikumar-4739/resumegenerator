@@ -88,6 +88,7 @@ export const PreviewResume: React.FC = () => {
   const [userDetailsList, setUserDetailsList] = useState<UserDetails[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currentUserIndex, setCurrentUserIndex] = useState<number>(0);
   const navigate = useNavigate();
 

@@ -42,10 +42,9 @@ export const AddAcademicsForm: React.FC = () => {
       setAcademicList(backendData);
       form.setFieldsValue({ academicList: backendData });
     } catch {
-      notification.warning({
+      notification.error({
         message: 'Error',
         description: 'Failed to fetch academics data',
-        className: 'custom-notification',
       });
     } finally {
       setLoading(false);
@@ -68,14 +67,12 @@ export const AddAcademicsForm: React.FC = () => {
         notification.success({
           message: 'Success',
           description: 'Data saved successfully!',
-          className: 'custom-notification',
         });
         setIsEditing(true); // Switch to editing mode after creation
       } else {
         notification.error({
           message: 'Error',
           description: 'Failed to save data. Server response was not OK.',
-          className: 'custom-notification',
         });
       }
     } catch (error) {
@@ -83,7 +80,6 @@ export const AddAcademicsForm: React.FC = () => {
       notification.error({
         message: 'Error',
         description: 'Failed to save data. Please check the console for more details.',
-        className: 'custom-notification',
       });
     }
   };
@@ -104,7 +100,6 @@ export const AddAcademicsForm: React.FC = () => {
         notification.success({
           message: 'Success',
           description: 'Data updated successfully!',
-          className: 'custom-notification',
         });
         setIsEditing(false); // Remain in view mode after update
         fetchAcademicData(userId); // Re-fetch data to ensure all forms are updated
@@ -112,7 +107,6 @@ export const AddAcademicsForm: React.FC = () => {
         notification.error({
           message: 'Error',
           description: 'Failed to update data. Server response was not OK.',
-          className: 'custom-notification',
         });
       }
     } catch (error) {
@@ -120,7 +114,6 @@ export const AddAcademicsForm: React.FC = () => {
       notification.error({
         message: 'Error',
         description: 'Failed to update data. Please check the console for more details.',
-        className: 'custom-notification',
       });
     }
   };
@@ -154,15 +147,18 @@ export const AddAcademicsForm: React.FC = () => {
     const updatedList = [...academicList];
     updatedList[index] = { ...updatedList[index], [field]: value };
     setAcademicList(updatedList);
-    // Update the form with the new value
     form.setFieldsValue({ academicList: updatedList });
   };
 
   const handleAddAcademic = () => {
-    setAcademicList(prev => [
-      ...prev,
-      { institutionName: '', passingYear: 0, qualification: '', university: '', percentage: 0 },
-    ]);
+    if (isEditing) {
+      createAcademicData(); // Call create API when adding new qualification in edit mode
+    } else {
+      setAcademicList(prev => [
+        ...prev,
+        { institutionName: '', passingYear: 0, qualification: '', university: '', percentage: 0 },
+      ]);
+    }
   };
 
   return (
@@ -249,8 +245,7 @@ export const AddAcademicsForm: React.FC = () => {
           onClick={handlePreviousSection}
           icon={<LeftOutlined />}
           style={{ marginRight: '10px' }}
-        >
-        </Button>
+        />
         <Button
           type="primary"
           onClick={handleSaveOrUpdate}
@@ -263,8 +258,7 @@ export const AddAcademicsForm: React.FC = () => {
           type="default"
           onClick={handleNextSection}
           icon={<RightOutlined />}
-        >
-        </Button>
+        />
         <Button
           type="dashed"
           onClick={handleAddAcademic}

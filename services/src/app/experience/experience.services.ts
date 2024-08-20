@@ -50,7 +50,6 @@ export class ExperienceService {
 
   async getExperiencesByIds(req: ExperienceIdRequest): Promise<ExperienceResponse> {
     try {
-      // Validate request
       if (!req.experienceId || !Array.isArray(req.experienceId)) {
         return {
           status: false,
@@ -60,7 +59,6 @@ export class ExperienceService {
         };
       }
 
-      // Fetch experiences
       const experiences = await this.experienceRepo.findByIds(req.experienceId);
       if (!experiences.length) {
         return {
@@ -71,7 +69,6 @@ export class ExperienceService {
         };
       }
 
-      // Map experiences to desired format
       const experienceModels: ExperienceModel[] = experiences.map(experience => ({
        experienceId: experience.experienceId,
         objective: experience.objective,
@@ -88,7 +85,8 @@ export class ExperienceService {
         data: experienceModels,
         errorCode: 0,
       };
-    } catch (error) {
+    } 
+    catch (error) {
       console.error('Error retrieving experiences:', error);
       return {
         status: false,
@@ -165,20 +163,8 @@ export class ExperienceService {
     try {
       console.log(`Fetching experiences for user ID: ${userId}`);
   
-      const user = await this.userRepo.getUsers([userId]);
-  
-      if (!user) {
-        return {
-          status: false,
-          internalMessage: 'User not found',
-          data: null,
-          errorCode: 404,
-        };
-      }
-  
       const experiences = await this.experienceRepo.find({ where: { userId: userId } });
       
-      console.log(`found the user id : ${experiences}`);
   
       if (!experiences.length) {
         return {

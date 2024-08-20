@@ -163,8 +163,6 @@ export class AcademicService {
 
   async getAcademicsByUserId(userId: number): Promise<AcademicResponse> {
     try {
-      console.log(`Fetching academic records for user ID: ${userId}`);
-
       const academics = await this.academicRepo.find({ where: { userId: userId } });
 
       if (academics.length === 0) {

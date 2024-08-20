@@ -8,14 +8,12 @@ import { SkillResponse } from './models/skills.response';
 import { SkillModel } from './models/skills.model';
 
 
-
 @Injectable()
 export class SkillService {
   constructor(
     @InjectRepository(SkillEntities) private skillRepo: Repository<SkillEntities>,
   ) {}
 
-  // Create Skill
   async createSkill(skillData: SkillCreateRequest): Promise<SkillResponse> {
     if (!skillData || !skillData.skillName) {
       return {
@@ -25,14 +23,9 @@ export class SkillService {
         errorCode: 2,
       };
     }
-  
-    const existingSkill = await this.skillRepo.findOne({
-      where: { skillName: skillData.skillName },
-    });
-    
+
     const newSkill = this.skillRepo.create({
       ...skillData,
-      // Ensure skillId is not set manually or undefined
     });
   
     try {
@@ -50,7 +43,8 @@ export class SkillService {
         data: [skillModel],
         errorCode: 0,
       };
-    } catch (error) {
+    } 
+    catch (error) {
       console.error('Error creating skill:', error); // Log the error for debugging
       return {
         status: false,
@@ -89,7 +83,8 @@ export class SkillService {
         data: [skillModel],
         errorCode: 0,
       };
-    } catch (error) {
+    } 
+    catch (error) {
       console.error('Error updating skill:', error); // Log the error for debugging
       return {
         status: false,
@@ -100,7 +95,6 @@ export class SkillService {
     }
 }
 
-  // Delete Skill
   async deleteSkill(skillId: number): Promise<SkillResponse> {
     try {
       const deleteResult = await this.skillRepo.delete(skillId);
@@ -130,33 +124,6 @@ export class SkillService {
     }
   }
 
-  // Get All Skills
-  async getAllSkills(): Promise<SkillResponse> {
-    try {
-      const skills = await this.skillRepo.find();
-      const skillModels: SkillModel[] = skills.map(skill => ({
-        skillId: skill.skillId,
-        skillName: skill.skillName,
-        department: skill.department,
-      }));
-
-      return {
-        status: true,
-        internalMessage: 'Skills retrieved successfully',
-        data: skillModels,
-        errorCode: 0,
-      };
-    } catch (error) {
-      return {
-        status: false,
-        internalMessage: 'Failed to retrieve skills',
-        data: null,
-        errorCode: 1,
-      };
-    }
-  }
-
-  // Get Skill by ID
   async getSkillById(skillId: number): Promise<SkillResponse> {
     try {
       const skill = await this.skillRepo.findOne({ where: { skillId } });
@@ -183,8 +150,6 @@ export class SkillService {
         errorCode: 0,
       };
     } catch (error) {
-      // Log the actual error details for debugging
-      console.error('Error retrieving skill:', error);
       return {
         status: false,
         internalMessage: 'Failed to retrieve skill',
@@ -198,7 +163,7 @@ export class SkillService {
     try {
       const skills = await this.skillRepo.find({ where: { userId } });
       
-      if (!skills.length) {
+      if (skills.length === 0) {
         return {
           status: false,
           internalMessage: 'No skills found for the user',

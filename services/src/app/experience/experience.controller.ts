@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, Param } from '@nestjs/common';
 import { ExperienceService } from './experience.services';
 import { ExperienceCreateRequest } from './models/exp.createrequest';
 import { ExperienceResponse } from './models/exp.response';
@@ -14,19 +14,19 @@ export class ExperienceController {
     return this.experienceService.createExperience(experienceData);
   }
 
-  @Post('/getByIds')
-  async getExperiencesByIds(@Body() req: ExperienceIdRequest): Promise<ExperienceResponse> {
-    return this.experienceService.getExperiencesByIds(req);
-}
-
   @Post('/deleteByIds')
   async deleteExperiencesByIds(@Body() req: ExperienceIdRequest): Promise<ExperienceResponse> {
     return this.experienceService.deleteExperiencesByIds(req);
   }
 
-  @Post(':userId')
+  @Post('/update/:userId')
   async updateExperience(@Body() experienceData: ExperienceCreateRequest & { experienceId: number }): Promise<ExperienceResponse> {
     return this.experienceService.updateExperience(experienceData);
+  }
+
+  @Post('/getExperiencesByIds')
+  async getExperiencesByIds(@Body() req: ExperienceIdRequest): Promise<ExperienceResponse> {
+    return this.experienceService.getExperiencesByIds(req);
   }
 
   @Post(':userId')

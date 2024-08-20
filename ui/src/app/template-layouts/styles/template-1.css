@@ -1,89 +1,73 @@
-.template1 {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  background-color: #e2dedd1f;
-  border: 1px solid #dddddd;
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(3, 170, 236, 0.1);
+/* styles/template-1.css */
+
+@page {
+  size: A4;
+  margin: 20mm;
 }
 
-h1 {
-  font-size: 32px;
-  color: #333333;
+.template1 {
+  width: 100%;
+  height: auto; /* Adjust the height as needed */
+  margin: auto;
+  padding: 20px;
+  box-sizing: border-box;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.header {
   text-align: center;
-  margin-bottom: 15px;
-  text-transform: uppercase;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-item {
+  margin-bottom: 0.5rem;
 }
 
 .section {
-  margin-bottom: 20px;
-  padding: 10px;
-  border-bottom: 2px solid #007bff;
-  color: #007bff;
+  margin-bottom: 1.5rem;
 }
 
-.section h2 {
-  font-size: 24px;
-  color: #007bff;
-  margin-bottom: 10px;
-  border-bottom: 2px solid #007bff;
-  padding-bottom: 5px;
+.list {
+  padding-left: 0;
+  list-style: none;
 }
 
-.section p {
-  font-size: 16px;
-  color: #555555;
-  margin: 5px 0;
-  line-height: 1.5;
+.list-item {
+  border-bottom: 1px solid #ddd;
+  padding: 0.5rem 0;
 }
 
-.section p strong {
-  font-weight: bold;
-  color: #333333;
+.list-item strong {
+  display: block;
+  margin-bottom: 0.25rem;
 }
 
-.section p:last-child {
-  margin-bottom: 0;
-}
-
-div > p {
-  font-style: italic;
-  color: #444444;
-}
-
-.section p.address {
-  white-space: pre-wrap;
-  margin-bottom: 10px;
-}
-
-.section h2 {
-  margin-top: 20px;
-  font-size: 20px;
-  color: #2c3e50;
-}
-
-.section p {
-  font-size: 14px;
-  color: #34495e;
-  margin: 4px 0;
-}
-
-@media (max-width: 600px) {
-  .template2 {
-    padding: 15px;
+@media print {
+  .template1 {
+    height: auto;
+    width: auto;
   }
+}
 
-  h1 {
-    font-size: 28px;
-  }
+.template1 {
+  padding: 10px; /* Decreased padding */
+  margin: 0 auto;
+}
 
-  .section h2 {
-    font-size: 18px;
-  }
+.template1 h1, .template1 h2 {
+  margin-bottom: 15px; /* Decreased margin for headings */
+}
 
-  .section p {
-    font-size: 14px;
-  }
+.template1 p, .template1 li {
+  padding: 2px 0; /* Reduced padding for paragraphs and list items */
+  margin: 2px 0; /* Reduced margin for paragraphs and list items */
 }

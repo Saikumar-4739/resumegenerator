@@ -1,50 +1,75 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserDetails } from '../layouts/types';
-import "./styles/template-5.css";
+import "./styles/template-5.css"
 
 const Template5: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
+  const [data, setData] = useState<UserDetails | null>(null);
+
+  useEffect(() => {
+    if (userDetails) {
+      setData(userDetails);
+      console.log(userDetails, "User Details Set");
+    }
+  }, [userDetails]);
+
+  console.log(data, "Data State");
+
   return (
-    <div className="template5">
-      <header>
-        <h1>{userDetails.name}</h1>
-        <div className="contact-info">
-          <p>Email: {userDetails.email}</p>
-          <p>Mobile: {userDetails.mobile}</p>
-          <p>Address: {userDetails.address.street}, {userDetails.address.city}, {userDetails.address.state}, {userDetails.address.country} - {userDetails.address.zipcode}</p>
-        </div>
-      </header>
-      <section className="objective">
-        <h2>Objective</h2>
-        <p>{userDetails.experience.objective}</p>
-      </section>
-      <section className="experience">
-        <h2>Experience</h2>
-        <p>Company: {userDetails.experience.companyName}</p>
-        <p>Role: {userDetails.experience.role}</p>
-        <p>Duration: {userDetails.experience.fromYear} - {userDetails.experience.toYear}</p>
-        <p>Description: {userDetails.experience.description}</p>
-      </section>
-      <section className="academics">
-        <h2>Academics</h2>
-        <p>Institution: {userDetails.academic.institutionName}</p>
-        <p>Passing Year: {userDetails.academic.passingYear}</p>
-        <p>Qualification: {userDetails.academic.qualification}</p>
-        <p>University: {userDetails.academic.university}</p>
-        <p>Percentage: {userDetails.academic.percentage}</p>
-      </section>
-      <section className="skills">
-        <h2>Skills</h2>
-        <p>Skills: {userDetails.skills.skillName}</p>
-        <p>Department: {userDetails.skills.department}</p>
-      </section>
-      <section className="personal-details">
-        <h2>Personal Details</h2>
-        <p>Father's Name: {userDetails.personalDetails.fatherName}</p>
-        <p>Mother's Name: {userDetails.personalDetails.motherName}</p>
-        <p>Date of Birth: {userDetails.personalDetails.dateOfBirth}</p>
-        <p>Marital Status: {userDetails.personalDetails.maritalStatus}</p>
-        <p>Languages Known: {userDetails.personalDetails.languagesKnown}</p>
-      </section>
+    <div className="template1">
+      {data && (
+        <>
+          <h1>{data.name}</h1>
+          <div className="section">
+            <p>Email: {data.email}</p>
+            <p>Mobile: {data.mobile}</p>
+            <p>Address: {data.address?.street}, {data.address?.city}, {data.address?.state}, {data.address?.country} - {data.address?.zipcode}</p>
+          </div>
+
+          <div className="section">
+            <h2>Experience</h2>
+            {data.experience?.map((rec, index) => (
+              <div key={index}>
+                <p>Company: {rec.companyName}</p>
+                <p>Role: {rec.role}</p>
+                <p>Duration: {rec.fromYear} - {rec.toYear}</p>
+                <p>Description: {rec.description}</p>
+              </div>
+            ))}
+          </div>
+          
+          <div className="section">
+            <h2>Academics</h2>
+            {data.academic?.map((rec, index)=> (
+              <div key={index}>
+                <p>Instituion: {rec.institutionName}</p>
+                <p>Passing Year: {rec.passingYear}</p>
+                <p>Qualification: {rec.qualification}</p>
+                <p>University: {rec.university}</p>
+                <p>Percentage: {rec.percentage}</p>
+            </div>
+          ))}
+          </div>
+
+          <div className="section">
+            <h2>Skills</h2>
+            {data.skills?.map((rec, index)=>
+            <div key={index}>
+              <p>{rec.skillName}</p>
+              <p>{rec.department}</p>
+            </div>
+            )}
+          </div>
+
+          <div className="section">
+            <h2>Personal Details</h2>
+            <p>Father's Name: {data.personalDetails?.fatherName}</p>
+            <p>Mother's Name: {data.personalDetails?.motherName}</p>
+            <p>Date of Birth: {data.personalDetails?.dateOfBirth}</p>
+            <p>Marital Status: {data.personalDetails?.maritalStatus}</p>
+            <p>Languages Known: {data.personalDetails?.languagesKnown}</p>
+          </div>
+        </>
+      )}
     </div>
   );
 };

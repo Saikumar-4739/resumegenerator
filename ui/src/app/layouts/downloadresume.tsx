@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useState, useEffect } from 'react';
 import { Button, message } from 'antd';
 import jsPDF from 'jspdf';
@@ -55,48 +54,56 @@ export const DownloadPage: React.FC = () => {
 
   const handleDownload = async () => {
     if (!userDetails.length) return;
-
+  
     const resumeContent = document.getElementById("resume-content");
-
+  
     if (resumeContent) {
       const buttons = document.querySelector(".button-container") as HTMLElement;
       const templateSelector = document.querySelector(".template-selection") as HTMLElement;
-
+  
       if (buttons && templateSelector) {
         buttons.style.display = "none";
         templateSelector.style.display = "none";
       }
-
+  
       // Ensure the content is visible
       resumeContent.style.visibility = 'visible';
       resumeContent.style.position = 'relative';
-      resumeContent.style.width = '210mm';
-      resumeContent.style.height = '350mm';
-      resumeContent.style.overflow = 'hidden';
-
+      resumeContent.style.width = '8.5inch'; // A4 width
+      resumeContent.style.height = '11inch'; // A4 height
+      resumeContent.style.overflow = 'visible'; // Make sure overflow is visible
+  
       try {
         const canvas = await html2canvas(resumeContent, {
           useCORS: true,
-          scale: 2,
+          scale: 2, // Increase scale if needed for higher resolution
           backgroundColor: null
         });
-
+  
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF({
           orientation: 'portrait',
           unit: 'mm',
-          format: [210, 350]
+          format: [210, 297] // A4 paper size
         });
-
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
-
-        const pdfWidth = 210;
-        const pdfHeight = (canvasHeight * pdfWidth) / canvasWidth;
-
+  
+        // Adjust dimensions based on the content
+        const pdfWidth = 210; // A4 width in mm
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // Maintain aspect ratio
+  
+        // Add image to PDF
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+  
+        // Adjust if content is larger than A4
+        if (pdfHeight > 297) {
+          // If content height exceeds A4 size, adjust scale or split content if necessary
+          pdf.internal.pageSize.height = pdfHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+        }
+  
         pdf.save("resume.pdf");
-
+  
         console.log('PDF saved successfully.');
       } catch (error) {
         message.error("Failed to capture resume content");
@@ -110,7 +117,8 @@ export const DownloadPage: React.FC = () => {
       }
     }
   };
-
+  
+   
   const handleBack = () => {
     navigate("/preview-resume");
   };

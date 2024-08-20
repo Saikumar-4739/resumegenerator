@@ -1,66 +1,34 @@
 .template2 {
-  font-family: Arial, sans-serif;
-  color: #fcfafa;
-  max-width: 800px;
+  font-family: 'Roboto', sans-serif;
+  color: #444;
+  padding: 30px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 20px;
-  background-color: #fff;
+  background: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }
 
-.header {
-  text-align: center;
-  border-bottom: 2px solid #fa7406;
-  margin-bottom: 20px;
+.template2 h1 {
+  font-size: 40px;
+  color: #1abc9c;
+  text-align: left;
+  border-bottom: 2px solid #1abc9c;
+  padding-bottom: 10px;
 }
 
-.name {
-  font-size: 2em;
-  font-weight: bold;
-  margin: 0;
-  color: #f7f7f7;
+.template2 .section {
+  margin-top: 25px;
 }
 
-.contact {
-  font-size: 1em;
-  margin-top: 5px;
-  color: #f8f0f0;
-}
-
-.objective-section {
-  margin-bottom: 20px;
-  background-color: #f7f7f7;
-  padding: 10px;
-  border-radius: 8px;
-}
-
-.section-title {
-  font-size: 1.5em;
-  font-weight: bold;
-  border-bottom: 2px solid #f07109;
-  padding-bottom: 5px;
+.template2 h2 {
+  font-size: 28px;
+  color: #2980b9;
   margin-bottom: 10px;
-  color: #ec5c08;
 }
 
-.section {
-  margin-bottom: 20px;
-}
-
-.section p {
-  margin: 5px 0;
-}
-
-.section strong {
-  color: #333;
-}
-
-.objective-section p {
-  font-style: italic;
-  color: #555;
-  font-size: 1.1em;
-  margin: 0;
-}
-
-.section h2 {
-  margin-top: 0;
+.template2 p {
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 6px 0;
 }

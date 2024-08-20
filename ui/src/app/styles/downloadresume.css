@@ -1,65 +1,16 @@
-.download-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  margin: 0 auto;
-  max-width: 1200px;
-}
-
-.button-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.template-selection {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.template-selection .ant-btn {
-  margin: 5px;
+#resume-content {
+  width: 210mm; /* A4 width */
+  height: auto; /* Allow height to expand based on content */
+  padding: 10mm; /* Padding for better spacing */
+  box-sizing: border-box;
 }
 
 .resume-content {
   width: 100%;
-  max-width: 210mm;
-  background-color: white;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  overflow: hidden;
-}
-
-@media (max-width: 768px) {
-  .resume-content {
-    padding: 10px;
-  }
-
-  .button-container, .template-selection {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .template-selection .ant-btn {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .resume-content {
-    width: 100%;
-    padding: 5px;
-  }
-
-  .button-container, .template-selection {
-    width: 100%;
-  }
-
-  .template-selection .ant-btn {
-    width: 100%;
-  }
+  min-height: 297mm; /* Ensure minimum height to cover A4 */
+  box-sizing: border-box;
+  padding: 10mm;
+  background-color: #f8f9fa00;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
