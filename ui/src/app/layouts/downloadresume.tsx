@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, message } from 'antd';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import html2pdf from 'html2pdf.js';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "../styles/downloadresume.css";
@@ -31,7 +30,7 @@ export const DownloadPage: React.FC = () => {
         const response = await axios.post(`http://localhost:3023/users/getUsersByUserIds/${userId}`);
 
         if (response.data.status) {
-          const users = response.data.data; // Assuming this is an array of user details
+          const users = response.data.data; 
           setUserDetails(users);
         } else {
           throw new Error(response.data.internalMessage || "Failed to fetch user details");
@@ -54,62 +53,39 @@ export const DownloadPage: React.FC = () => {
 
   const handleDownload = async () => {
     if (!userDetails.length) return;
-  
+
     const resumeContent = document.getElementById("resume-content");
-  
+
     if (resumeContent) {
       const buttons = document.querySelector(".button-container") as HTMLElement;
       const templateSelector = document.querySelector(".template-selection") as HTMLElement;
-  
+
       if (buttons && templateSelector) {
         buttons.style.display = "none";
         templateSelector.style.display = "none";
       }
-  
-      // Ensure the content is visible
+
       resumeContent.style.visibility = 'visible';
       resumeContent.style.position = 'relative';
-      resumeContent.style.width = '8.5inch'; // A4 width
-      resumeContent.style.height = '11inch'; // A4 height
-      resumeContent.style.overflow = 'visible'; // Make sure overflow is visible
-  
+      resumeContent.style.width = '210mm'; // A4 width in mm
+      resumeContent.style.height = 'auto'; // Allow height to expand
+      resumeContent.style.overflow = 'visible';
+
       try {
-        const canvas = await html2canvas(resumeContent, {
-          useCORS: true,
-          scale: 2, // Increase scale if needed for higher resolution
-          backgroundColor: null
-        });
-  
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: [210, 297] // A4 paper size
-        });
-  
-        // Adjust dimensions based on the content
-        const pdfWidth = 210; // A4 width in mm
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // Maintain aspect ratio
-  
-        // Add image to PDF
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-  
-        // Adjust if content is larger than A4
-        if (pdfHeight > 297) {
-          // If content height exceeds A4 size, adjust scale or split content if necessary
-          pdf.internal.pageSize.height = pdfHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
-        }
-  
-        pdf.save("resume.pdf");
-  
+        const pdfOptions = {
+          margin: 10,
+          filename: 'resume.pdf',
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        html2pdf().from(resumeContent).set(pdfOptions).save();
         console.log('PDF saved successfully.');
       } catch (error) {
         message.error("Failed to capture resume content");
         console.error('Error capturing resume content:', error);
       } finally {
-        // Restore the hidden elements
         if (buttons && templateSelector) {
           buttons.style.display = "block";
           templateSelector.style.display = "block";
@@ -117,8 +93,7 @@ export const DownloadPage: React.FC = () => {
       }
     }
   };
-  
-   
+
   const handleBack = () => {
     navigate("/preview-resume");
   };

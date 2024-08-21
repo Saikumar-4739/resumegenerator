@@ -1,73 +1,53 @@
-/* styles/template-1.css */
-
-@page {
-  size: A4;
-  margin: 20mm;
-}
-
 .template1 {
-  width: 100%;
-  height: auto; /* Adjust the height as needed */
-  margin: auto;
-  padding: 20px;
-  box-sizing: border-box;
-  border-radius: 15px;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 20px; /* Add padding around the container */
+  box-sizing: border-box; /* Ensure padding doesn't affect overall width */
 }
 
 .header {
   text-align: center;
+  margin-bottom: 16px; /* Adjust spacing below header */
 }
 
-.mb-4 {
-  margin-bottom: 1.5rem;
-}
-
-.contact-info {
+.contact-item, .list-item {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  margin-bottom: 8px; /* Adjust spacing between items */
 }
 
-.contact-item {
-  margin-bottom: 0.5rem;
+.contact-item p, .list-item p {
+  margin: 0 10px; /* Adjust spacing between labels and values */
 }
 
-.section {
-  margin-bottom: 1.5rem;
+.contact-item p:first-child, .list-item p:first-child {
+  font-weight: bold; /* Make labels bold */
 }
 
 .list {
-  padding-left: 0;
   list-style: none;
+  padding: 0;
+  margin: 0; /* Remove default margins */
 }
 
 .list-item {
-  border-bottom: 1px solid #ddd;
-  padding: 0.5rem 0;
+  display: flex;
+  flex-direction: row; /* Align items in a row */
+  align-items: center;
+  margin-bottom: 8px; /* Adjust spacing between items */
 }
 
-.list-item strong {
-  display: block;
-  margin-bottom: 0.25rem;
+.list-item p {
+  margin: 0; /* Remove default margin from list items */
 }
 
-@media print {
-  .template1 {
-    height: auto;
-    width: auto;
+.section {
+  margin-bottom: 16px; /* Adjust spacing between sections */
+}
+
+@media (max-width: 768px) {
+  .contact-item, .list-item {
+    flex-direction: column; /* Stack items vertically on small screens */
+    align-items: flex-start;
   }
-}
-
-.template1 {
-  padding: 10px; /* Decreased padding */
-  margin: 0 auto;
-}
-
-.template1 h1, .template1 h2 {
-  margin-bottom: 15px; /* Decreased margin for headings */
-}
-
-.template1 p, .template1 li {
-  padding: 2px 0; /* Reduced padding for paragraphs and list items */
-  margin: 2px 0; /* Reduced margin for paragraphs and list items */
 }

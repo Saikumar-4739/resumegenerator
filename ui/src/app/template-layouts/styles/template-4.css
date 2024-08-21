@@ -1,28 +1,42 @@
-.template4 {
-    font-family: Arial, sans-serif;
-    background-color: #e7d5d500;
-    padding: 20px;
-    color: #333;
-  }
-  
-  .name {
-    font-size: 36px;
-    margin-bottom: 10px;
-    color: rgb(5, 5, 5);
-  }
-  
-  .section {
-    margin-bottom: 20px;
-  }
-  
-  .contact-info {
-    font-size: 18px;
-  }
-  
-  .section h2 {
-    color: #0056b3;
-  }
+/* template-4.css */
 
-.names{
-  color: black;
+.template4 {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.template4 h1 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.template4 .section {
+  margin-bottom: 20px;
+}
+
+.template4 .section h2 {
+  font-size: 20px;
+  color: #555;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+.template4 p {
+  font-size: 16px;
+  color: #666;
+  margin: 5px 0;
+}
+
+.template4 .section div {
+  margin-bottom: 15px;
+}
+
+.template4 .section div p {
+  margin: 3px 0;
 }

@@ -26,29 +26,27 @@ export const AddAcademicsForm: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
   const [userId] = useState<string | null>(localStorage.getItem('userId'));
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (userId) {
       fetchAcademicData(userId);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchAcademicData = async (userId: string) => {
-    setLoading(true);
     try {
       const response = await axios.post(`http://localhost:3023/academics/${userId}`);
       const backendData: Academics[] = response.data.data;
       setAcademicList(backendData);
       form.setFieldsValue({ academicList: backendData });
     } catch {
-      notification.error({
+      notification.warning({
         message: 'Error',
         description: 'Failed to fetch academics data',
+        className: 'custom-notification',
       });
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   const createAcademicData = async () => {
@@ -67,12 +65,14 @@ export const AddAcademicsForm: React.FC = () => {
         notification.success({
           message: 'Success',
           description: 'Data saved successfully!',
+          className: 'custom-notification',
         });
         setIsEditing(true); // Switch to editing mode after creation
       } else {
         notification.error({
           message: 'Error',
           description: 'Failed to save data. Server response was not OK.',
+          className: 'custom-notification',
         });
       }
     } catch (error) {
@@ -80,6 +80,7 @@ export const AddAcademicsForm: React.FC = () => {
       notification.error({
         message: 'Error',
         description: 'Failed to save data. Please check the console for more details.',
+        className: 'custom-notification',
       });
     }
   };
@@ -100,6 +101,7 @@ export const AddAcademicsForm: React.FC = () => {
         notification.success({
           message: 'Success',
           description: 'Data updated successfully!',
+          className: 'custom-notification',
         });
         setIsEditing(false); // Remain in view mode after update
         fetchAcademicData(userId); // Re-fetch data to ensure all forms are updated
@@ -107,6 +109,7 @@ export const AddAcademicsForm: React.FC = () => {
         notification.error({
           message: 'Error',
           description: 'Failed to update data. Server response was not OK.',
+          className: 'custom-notification',
         });
       }
     } catch (error) {
@@ -114,6 +117,7 @@ export const AddAcademicsForm: React.FC = () => {
       notification.error({
         message: 'Error',
         description: 'Failed to update data. Please check the console for more details.',
+        className: 'custom-notification',
       });
     }
   };
@@ -143,22 +147,19 @@ export const AddAcademicsForm: React.FC = () => {
       });
   };
 
-  const handleFieldChange = (index: number, field: keyof Academics, value: any) => {
+  const handleFieldChange = (index: number, field: keyof Academics, value: unknown) => {
     const updatedList = [...academicList];
     updatedList[index] = { ...updatedList[index], [field]: value };
     setAcademicList(updatedList);
+    // Update the form with the new value
     form.setFieldsValue({ academicList: updatedList });
   };
 
   const handleAddAcademic = () => {
-    if (isEditing) {
-      createAcademicData(); // Call create API when adding new qualification in edit mode
-    } else {
-      setAcademicList(prev => [
-        ...prev,
-        { institutionName: '', passingYear: 0, qualification: '', university: '', percentage: 0 },
-      ]);
-    }
+    setAcademicList(prev => [
+      ...prev,
+      { institutionName: '', passingYear: 0, qualification: '', university: '', percentage: 0 },
+    ]);
   };
 
   return (
@@ -245,7 +246,8 @@ export const AddAcademicsForm: React.FC = () => {
           onClick={handlePreviousSection}
           icon={<LeftOutlined />}
           style={{ marginRight: '10px' }}
-        />
+        >
+        </Button>
         <Button
           type="primary"
           onClick={handleSaveOrUpdate}
@@ -258,7 +260,8 @@ export const AddAcademicsForm: React.FC = () => {
           type="default"
           onClick={handleNextSection}
           icon={<RightOutlined />}
-        />
+        >
+        </Button>
         <Button
           type="dashed"
           onClick={handleAddAcademic}

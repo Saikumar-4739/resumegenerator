@@ -32,7 +32,6 @@ export const Experience: React.FC = () => {
   const fetchExperienceData = async (userId: string) => {
     try {
       const response = await axios.post(`http://localhost:3023/experiences/${userId}`);
-      console.log('API Response:', response.data);
 
       if (response.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
         const fetchedData = response.data.data;
@@ -65,10 +64,6 @@ export const Experience: React.FC = () => {
       const experience = forms[index];
       const endpoint = `http://localhost:3023/experiences/update/${userId}`;
       const response = await axios.post(endpoint, experience);
-
-      // Log the response for debugging
-      console.log('Update Response Status:', response.status);
-      console.log('Update Response Data:', response.data);
 
       if (response.status === 200 || response.status === 201 || response.status === 204) {
         // Success

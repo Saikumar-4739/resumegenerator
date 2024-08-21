@@ -1,34 +1,86 @@
 .template2 {
-  font-family: 'Roboto', sans-serif;
-  color: #444;
-  padding: 30px;
-  max-width: 900px;
-  margin: 0 auto;
-  background: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: 1fr; /* Single column by default */
+  grid-gap: 20px;
 }
 
-.template2 h1 {
-  font-size: 40px;
-  color: #1abc9c;
-  text-align: left;
-  border-bottom: 2px solid #1abc9c;
-  padding-bottom: 10px;
+.template2 h1, .template1 h2 {
+  color: #333;
+  margin-bottom: 15px;
 }
 
 .template2 .section {
-  margin-top: 25px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
 }
 
-.template2 h2 {
-  font-size: 28px;
-  color: #2980b9;
-  margin-bottom: 10px;
+.template2 .section:nth-of-type(2) {
+  background-color: #e0f7fa;
+  border-left: 5px solid #00acc1;
+}
+.template2 .section:nth-of-type(3) {
+  background-color: #e8f5e9;
+  border-left: 5px solid #66bb6a;
+}
+
+.template2 .section:nth-of-type(4) {
+  background-color: #fff3e0;
+  border-left: 5px solid #ff9800;
+}
+
+.template2 .section:nth-of-type(5) {
+  background-color: #fce4ec;
+  border-left: 5px solid #ec407a;
 }
 
 .template2 p {
-  font-size: 16px;
-  line-height: 1.5;
-  margin: 6px 0;
+  color: #555;
+  line-height: 1.6;
 }
+
+@media (min-width: 769px) {
+  .template2 {
+    grid-template-columns: 1fr 1fr; 
+  }
+
+  .template2 .section {
+    margin-bottom: 0; 
+  }
+}
+
+@media (max-width: 768px) {
+  .template2 {
+    margin: 10px;
+    padding: 10px;
+    /* grid-template-columns: 1fr;  */
+  }
+
+  .template2 h1, .template1 h2 {
+    font-size: 1.5rem;
+  }
+
+  .template2 p {
+    font-size: 0.875rem;
+  }
+}
+
+
+@media print {
+  .template2 .section:nth-of-type(2),
+  .template2 .section:nth-of-type(3),
+  .template2 .section:nth-of-type(4),
+  .template2 .section:nth-of-type(5) {
+    page-break-before: always;
+    break-before: page;
+  }
+}
+

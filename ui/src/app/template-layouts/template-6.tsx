@@ -8,11 +8,8 @@ const Template6: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
   useEffect(() => {
     if (userDetails) {
       setData(userDetails);
-      console.log(userDetails, "User Details Set");
     }
   }, [userDetails]);
-
-  console.log(data, "Data State");
 
   return (
     <div className="template1">

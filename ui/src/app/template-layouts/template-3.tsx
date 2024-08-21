@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { UserDetails } from '../layouts/types';
 import "./styles/template-3.css"
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 const Template3: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
   const [data, setData] = useState<UserDetails | null>(null);
@@ -8,14 +10,12 @@ const Template3: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
   useEffect(() => {
     if (userDetails) {
       setData(userDetails);
-      console.log(userDetails, "User Details Set");
     }
   }, [userDetails]);
 
-  console.log(data, "Data State");
 
   return (
-    <div className="template1">
+    <div className="template3">
       {data && (
         <>
           <h1>{data.name}</h1>

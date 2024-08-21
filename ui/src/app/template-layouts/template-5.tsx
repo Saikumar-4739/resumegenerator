@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { UserDetails } from '../layouts/types';
-import "./styles/template-5.css"
+import { Box, Typography, Paper } from '@mui/material';
+import './styles/template-5.css';
 
 const Template5: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
   const [data, setData] = useState<UserDetails | null>(null);
@@ -8,69 +9,71 @@ const Template5: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
   useEffect(() => {
     if (userDetails) {
       setData(userDetails);
-      console.log(userDetails, "User Details Set");
     }
   }, [userDetails]);
 
-  console.log(data, "Data State");
-
   return (
-    <div className="template1">
+    <Box className="template5" sx={{ padding: 2 }}>
       {data && (
         <>
-          <h1>{data.name}</h1>
-          <div className="section">
-            <p>Email: {data.email}</p>
-            <p>Mobile: {data.mobile}</p>
-            <p>Address: {data.address?.street}, {data.address?.city}, {data.address?.state}, {data.address?.country} - {data.address?.zipcode}</p>
-          </div>
+          <Typography variant="h4" gutterBottom>
+            {data.name}
+          </Typography>
+          <Paper elevation={3} sx={{ padding: 2, marginBottom: 2 }}>
+            <Typography variant="h6">Contact Information</Typography>
+            <Typography>Email: {data.email}</Typography>
+            <Typography>Mobile: {data.mobile}</Typography>
+            <Typography>
+              Address: {data.address?.street}, {data.address?.city}, {data.address?.state}, {data.address?.country} - {data.address?.zipcode}
+            </Typography>
+          </Paper>
 
-          <div className="section">
-            <h2>Experience</h2>
+          <Paper elevation={3} sx={{ padding: 2, marginBottom: 2 }}>
+            <Typography variant="h6">Experience</Typography>
             {data.experience?.map((rec, index) => (
-              <div key={index}>
-                <p>Company: {rec.companyName}</p>
-                <p>Role: {rec.role}</p>
-                <p>Duration: {rec.fromYear} - {rec.toYear}</p>
-                <p>Description: {rec.description}</p>
-              </div>
+              <Box key={index} sx={{ marginBottom: 1 }}>
+                <Typography>Company: {rec.companyName}</Typography>
+                <Typography>Role: {rec.role}</Typography>
+                <Typography>Duration: {rec.fromYear} - {rec.toYear}</Typography>
+                <Typography>Description: {rec.description}</Typography>
+              </Box>
             ))}
-          </div>
-          
-          <div className="section">
-            <h2>Academics</h2>
-            {data.academic?.map((rec, index)=> (
-              <div key={index}>
-                <p>Instituion: {rec.institutionName}</p>
-                <p>Passing Year: {rec.passingYear}</p>
-                <p>Qualification: {rec.qualification}</p>
-                <p>University: {rec.university}</p>
-                <p>Percentage: {rec.percentage}</p>
-            </div>
-          ))}
-          </div>
+          </Paper>
 
-          <div className="section">
-            <h2>Skills</h2>
-            {data.skills?.map((rec, index)=>
-            <div key={index}>
-              <p>{rec.skillName}</p>
-              <p>{rec.department}</p>
-            </div>
-            )}
-          </div>
+          <Paper elevation={3} sx={{ padding: 2, marginBottom: 2 }}>
+            <Typography variant="h6">Academics</Typography>
+            {data.academic?.map((rec, index) => (
+              <Box key={index} sx={{ marginBottom: 1 }}>
+                <Typography>Institution: {rec.institutionName}</Typography>
+                <Typography>Passing Year: {rec.passingYear}</Typography>
+                <Typography>Qualification: {rec.qualification}</Typography>
+                <Typography>University: {rec.university}</Typography>
+                <Typography>Percentage: {rec.percentage}</Typography>
+              </Box>
+            ))}
+          </Paper>
 
-          <div className="section">
-            <h2>Personal Details</h2>
-            <p>Father's Name: {data.personalDetails?.fatherName}</p>
-            <p>Mother's Name: {data.personalDetails?.motherName}</p>
-            <p>Date of Birth: {data.personalDetails?.dateOfBirth}</p>
-            <p>Marital Status: {data.personalDetails?.maritalStatus}</p>
-            <p>Languages Known: {data.personalDetails?.languagesKnown}</p>
-          </div>
+          <Paper elevation={3} sx={{ padding: 2, marginBottom: 2 }}>
+            <Typography variant="h6">Skills</Typography>
+            {data.skills?.map((rec, index) => (
+              <Box key={index} sx={{ marginBottom: 1 }}>
+                <Typography>Skill: {rec.skillName}</Typography>
+                <Typography>Department: {rec.department}</Typography>
+              </Box>
+            ))}
+          </Paper>
+
+          <Paper elevation={3} sx={{ padding: 2 }}>
+            <Typography variant="h6">Personal Details</Typography>
+            <Typography>Father's Name: {data.personalDetails?.fatherName}</Typography>
+            <Typography>Mother's Name: {data.personalDetails?.motherName}</Typography>
+            <Typography>Date of Birth: {data.personalDetails?.dateOfBirth}</Typography>
+            <Typography>Marital Status: {data.personalDetails?.maritalStatus}</Typography>
+            <Typography>Languages Known: {data.personalDetails?.languagesKnown}</Typography>
+          </Paper>
         </>
       )}
-    </div>
+    </Box>
   );
 };
 
