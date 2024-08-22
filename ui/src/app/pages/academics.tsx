@@ -12,7 +12,7 @@ interface Academics {
   percentage: number;
 }
 
-export const AddAcademicsForm: React.FC = () => {
+const AddAcademicsForm: React.FC = () => {
   const [form] = Form.useForm();
   const [academicList, setAcademicList] = useState<Academics[]>([
     {
@@ -31,7 +31,6 @@ export const AddAcademicsForm: React.FC = () => {
     if (userId) {
       fetchAcademicData(userId);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchAcademicData = async (userId: string) => {
@@ -46,7 +45,7 @@ export const AddAcademicsForm: React.FC = () => {
         description: 'Failed to fetch academics data',
         className: 'custom-notification',
       });
-    } 
+    }
   };
 
   const createAcademicData = async () => {
@@ -67,7 +66,8 @@ export const AddAcademicsForm: React.FC = () => {
           description: 'Data saved successfully!',
           className: 'custom-notification',
         });
-        setIsEditing(true); // Switch to editing mode after creation
+        // Optionally, re-fetch data or clear form
+        fetchAcademicData(userId);
       } else {
         notification.error({
           message: 'Error',
@@ -103,7 +103,7 @@ export const AddAcademicsForm: React.FC = () => {
           description: 'Data updated successfully!',
           className: 'custom-notification',
         });
-        setIsEditing(false); // Remain in view mode after update
+        setIsEditing(false); // Exit edit mode
         fetchAcademicData(userId); // Re-fetch data to ensure all forms are updated
       } else {
         notification.error({
@@ -122,18 +122,9 @@ export const AddAcademicsForm: React.FC = () => {
     }
   };
 
-  const handleNextSection = () => {
-    navigate('/skills');
-  };
-
-  const handlePreviousSection = () => {
-    navigate('/experience');
-  };
-
-  const handleSaveOrUpdate = () => {
+  const handleSave = () => {
     form.validateFields()
       .then(() => {
-        // Sync form values with state
         const values = form.getFieldsValue();
         setAcademicList(values.academicList || []);
         if (isEditing) {
@@ -151,7 +142,6 @@ export const AddAcademicsForm: React.FC = () => {
     const updatedList = [...academicList];
     updatedList[index] = { ...updatedList[index], [field]: value };
     setAcademicList(updatedList);
-    // Update the form with the new value
     form.setFieldsValue({ academicList: updatedList });
   };
 
@@ -160,6 +150,15 @@ export const AddAcademicsForm: React.FC = () => {
       ...prev,
       { institutionName: '', passingYear: 0, qualification: '', university: '', percentage: 0 },
     ]);
+    // Optionally, you might want to call createAcademicData if adding should persist immediately
+  };
+
+  const handleNextSection = () => {
+    navigate('/skills');
+  };
+
+  const handlePreviousSection = () => {
+    navigate('/experience');
   };
 
   return (
@@ -247,10 +246,11 @@ export const AddAcademicsForm: React.FC = () => {
           icon={<LeftOutlined />}
           style={{ marginRight: '10px' }}
         >
+          Previous
         </Button>
         <Button
           type="primary"
-          onClick={handleSaveOrUpdate}
+          onClick={handleSave}
           icon={<SaveOutlined />}
           style={{ marginRight: '10px' }}
         >
@@ -261,6 +261,7 @@ export const AddAcademicsForm: React.FC = () => {
           onClick={handleNextSection}
           icon={<RightOutlined />}
         >
+          Next
         </Button>
         <Button
           type="dashed"
@@ -274,3 +275,6 @@ export const AddAcademicsForm: React.FC = () => {
     </Form>
   );
 };
+
+
+export default AddAcademicsForm;

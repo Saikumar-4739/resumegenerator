@@ -29,7 +29,7 @@ import { PersonalDetailsModule } from './personal-details/personal-details.modul
     AcademicModule,
     ExperienceModule,
     SkillModule,
-    PersonalDetailsModule
+    PersonalDetailsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

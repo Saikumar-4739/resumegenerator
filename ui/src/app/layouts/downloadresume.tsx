@@ -67,8 +67,8 @@ export const DownloadPage: React.FC = () => {
 
       resumeContent.style.visibility = 'visible';
       resumeContent.style.position = 'relative';
-      resumeContent.style.width = '210mm'; // A4 width in mm
-      resumeContent.style.height = 'auto'; // Allow height to expand
+      resumeContent.style.width = '190mm'; 
+      resumeContent.style.height = 'auto'; 
       resumeContent.style.overflow = 'visible';
 
       try {

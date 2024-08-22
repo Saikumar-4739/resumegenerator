@@ -4,17 +4,26 @@ import "./styles/template-2.css"
 
 const Template2: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
   const [data, setData] = useState<UserDetails | null>(null);
+  const [userImage, setUserImage] = useState<string | null>(null);
 
   useEffect(() => {
     if (userDetails) {
       setData(userDetails);
+    }
+    const storedImage = localStorage.getItem('uploadedImage');
+    if (storedImage) {
+      setUserImage(storedImage);
     }
   }, [userDetails]);
   return (
     <div className="template2">
       {data && (
         <>
-          <h1>{data.name}</h1>
+          <h1>{data.name}
+          {userImage && (
+                  <img src={userImage} alt="User" className="user-image-header" />
+                )}
+          </h1>
           <div className="section">
             <p>Email: {data.email}</p>
             <p>Mobile: {data.mobile}</p>
@@ -64,6 +73,11 @@ const Template2: React.FC<{ userDetails: UserDetails }> = ({ userDetails }) => {
             <p>Marital Status: {data.personalDetails?.maritalStatus}</p>
             <p>Languages Known: {data.personalDetails?.languagesKnown}</p>
           </div>
+          {data.uploadedImage && (
+            <div className="user-image">
+              <img src={data.uploadedImage} alt="User" />
+            </div>
+          )}
         </>
       )}
     </div>

@@ -1,4 +1,3 @@
-/* General styles for the download page */
 .download-page {
   display: flex;
   flex-direction: column;
@@ -32,12 +31,11 @@
   position: relative;
 }
 
-/* Add styles to ensure elements align properly */
 .resume-content {
   margin-bottom: 20px;
   border: 1px solid #ddd;
   padding: 10px;
-  background-color: #f9f9f9;
+  background-color: #f9f9f900;
   width: 100%;
 }
 

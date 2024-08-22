@@ -1,11 +1,13 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { NxReactWebpackPlugin } = require('@nx/react/webpack-plugin');
 const { join } = require('path');
+const { merge } = require('webpack-merge');
 
-module.exports = {
+module.exports = merge({
   output: {
     path: join(__dirname, '../dist/ui'),
   },
+  
   devServer: {
     port: 4200,
     historyApiFallback: true,
@@ -28,4 +30,34 @@ module.exports = {
       // svgr: false
     }),
   ],
-};
+  resolve: {
+    alias: {
+      'html2pdf.js': false,
+    }
+  }
+}, {
+  module: {
+    rules: [
+      {
+        enforce: 'pre',
+        test: /\.js$/,
+        use: [
+          {
+            loader: 'source-map-loader',
+            options: {
+              filterSourceMappingUrl: (url, resourcePath) => {
+                // Exclude html2pdf.js from source map processing
+                if (/html2pdf\.js/.test(resourcePath)) {
+                  return false;
+                }
+
+                // Continue with the default behavior for other files
+                return true;
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+});

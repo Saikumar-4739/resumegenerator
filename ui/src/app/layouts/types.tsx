@@ -38,6 +38,7 @@ export interface Address {
   }
   
   export interface UserDetails {
+    uploadedImage: string;
     name: string;
     email: string;
     mobile: string;

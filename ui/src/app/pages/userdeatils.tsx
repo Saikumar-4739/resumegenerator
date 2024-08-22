@@ -20,7 +20,7 @@ interface UserDetails {
   };
 }
 
-export const UserDetailsForm: React.FC = () => {
+const UserDetailsForm: React.FC = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -257,3 +257,5 @@ export const UserDetailsForm: React.FC = () => {
     </div>
   );
 };
+
+export default UserDetailsForm;
