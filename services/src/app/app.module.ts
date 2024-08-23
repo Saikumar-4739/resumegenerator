@@ -8,6 +8,8 @@ import { AcademicModule } from './academics/academics.module';
 import { ExperienceModule } from './experience/experience.module';
 import { SkillModule } from './skills/skills.module';
 import { PersonalDetailsModule } from './personal-details/personal-details.module';
+import { ImageModule } from './image/image.module';
+
 
 
 
@@ -30,6 +32,7 @@ import { PersonalDetailsModule } from './personal-details/personal-details.modul
     ExperienceModule,
     SkillModule,
     PersonalDetailsModule,
+    ImageModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -8,40 +8,39 @@ interface Skill {
   id?: string;
   skillName: string;
   department: string;
+  isEditing?: boolean; // Track edit mode for each skill
 }
 
 export const AddSkillsForm: React.FC = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [isEditing, setIsEditing] = useState(false);
-  const [skillsList, setSkillsList] = useState<Skill[]>([{ skillName: '', department: '' }]);
+  const [skillsList, setSkillsList] = useState<Skill[]>([{ skillName: '', department: '', isEditing: true }]);
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
     if (userId) {
       fetchSkillsData(userId);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchSkillsData = async (userId: string) => {
     try {
       const response = await axios.post(`http://localhost:3023/skills/${userId}`);
       if (response.data && response.data.data.length > 0) {
-        const backendData: Skill[] = response.data.data;
+        const backendData: Skill[] = response.data.data.map((skill: Skill) => ({ ...skill, isEditing: false }));
         setSkillsList(backendData);
         form.setFieldsValue({ skillsList: backendData });
       } else {
         resetSkillsList();
       }
-      setIsEditing(false);
     } catch (error) {
       handleFetchError(error);
     }
   };
 
   const resetSkillsList = () => {
-    const emptyList = [{ skillName: '', department: '' }];
+    const emptyList = [{ skillName: '', department: '', isEditing: true }];
     setSkillsList(emptyList);
     form.setFieldsValue({ skillsList: emptyList });
   };
@@ -54,7 +53,7 @@ export const AddSkillsForm: React.FC = () => {
     });
   };
 
-  const saveDataToBackend = async () => {
+  const updateSkillsData = async (index: number) => {
     if (!userId) {
       notification.error({
         message: 'Error',
@@ -63,25 +62,54 @@ export const AddSkillsForm: React.FC = () => {
       return;
     }
 
-    const saveData = skillsList.map(skill => ({
-      id: skill.id || undefined,
-      skillName: skill.skillName,
-      department: skill.department,
+    const skillToUpdate = skillsList[index];
+    const updateData = {
+      id: skillToUpdate.id, // Ensure the skill has an id to be updated
+      skillName: skillToUpdate.skillName,
+      department: skillToUpdate.department,
       userId,
-    }));
+    };
 
     try {
-      const endpoint = isEditing ? `http://localhost:3023/skills/${userId}` : 'http://localhost:3023/skills/createSkill';
-      const method = isEditing ? axios.put : axios.post;
-
-      await method(endpoint, { skills: saveData });
+      await axios.post(`http://localhost:3023/skills/update/${userId}`, { skills: [updateData] });
 
       notification.success({
         message: 'Success',
-        description: `Skills ${isEditing ? 'updated' : 'saved'} successfully! Click on Next Section.`,
+        description: 'Skill updated successfully!',
       });
 
-      setIsEditing(false);
+      // Update the isEditing state of the skill after successful save
+      const updatedSkillsList = [...skillsList];
+      updatedSkillsList[index].isEditing = false;
+      setSkillsList(updatedSkillsList);
+
+    } catch (error) {
+      handleSaveError(error);
+    }
+  };
+
+  const createSkillsData = async (index: number) => {
+    if (!userId) {
+      notification.error({
+        message: 'Error',
+        description: 'User ID not found. Please make sure you have saved user details.',
+      });
+      return;
+    }
+
+    const skill = skillsList[index];
+
+    try {
+      await axios.post('http://localhost:3023/skills/createSkill', { skills: [skill] });
+
+      notification.success({
+        message: 'Success',
+        description: 'Skill saved successfully!',
+      });
+
+      const updatedSkillsList = [...skillsList];
+      updatedSkillsList[index].isEditing = false;
+      setSkillsList(updatedSkillsList);
     } catch (error) {
       handleSaveError(error);
     }
@@ -95,15 +123,31 @@ export const AddSkillsForm: React.FC = () => {
     });
   };
 
-  const handleEdit = () => setIsEditing(true);
+  const handleEdit = (index: number) => {
+    const updatedSkillsList = [...skillsList];
+    updatedSkillsList[index].isEditing = true;
+    setSkillsList(updatedSkillsList);
+  };
+
+  const handleChange = (index: number, field: keyof Skill, value: string) => {
+    const updatedSkillsList = [...skillsList];
+
+    if (field === 'skillName' || field === 'department') {
+      updatedSkillsList[index][field] = value;
+      setSkillsList(updatedSkillsList);
+      updateSkillsData(index); // Automatically trigger update API call on change
+    }
+  };
 
   const handleNextSection = () => navigate('/personal-details');
 
   const handlePreviousSection = () => navigate('/academics');
 
   const handleAddSkill = () => {
-    setSkillsList(prev => [...prev, { skillName: '', department: '' }]);
-    form.setFieldsValue({ skillsList: [...skillsList, { skillName: '', department: '' }] });
+    const newSkill = { skillName: '', department: '', isEditing: true };
+    const newSkillsList = [...skillsList, newSkill];
+    setSkillsList(newSkillsList);
+    form.setFieldsValue({ skillsList: newSkillsList });
   };
 
   const handleRemoveSkill = (index: number) => {
@@ -123,8 +167,10 @@ export const AddSkillsForm: React.FC = () => {
               rules={[{ required: true, message: 'Please input your skill name!' }]}
             >
               <Input
-                disabled={!isEditing}
-                placeholder={isEditing ? 'Enter skill name' : skill.skillName}
+                disabled={!skill.isEditing}
+                value={skill.skillName}
+                onChange={e => handleChange(index, 'skillName', e.target.value)}
+                placeholder={skill.isEditing ? 'Enter skill name' : skill.skillName}
               />
             </Form.Item>
           </Col>
@@ -135,13 +181,34 @@ export const AddSkillsForm: React.FC = () => {
               rules={[{ required: true, message: 'Please input your department!' }]}
             >
               <Input
-                disabled={!isEditing}
-                placeholder={isEditing ? 'Enter department' : skill.department}
+                disabled={!skill.isEditing}
+                value={skill.department}
+                onChange={e => handleChange(index, 'department', e.target.value)}
+                placeholder={skill.isEditing ? 'Enter department' : skill.department}
               />
             </Form.Item>
           </Col>
-          {isEditing && (
-            <Col span={24} style={{ textAlign: 'right' }}>
+          <Col span={24} style={{ textAlign: 'right' }}>
+            {skill.isEditing ? (
+              <Button
+                type="primary"
+                icon={<SaveOutlined />}
+                style={{ marginRight: '10px' }}
+                onClick={() => updateSkillsData(index)}
+              >
+                Save
+              </Button>
+            ) : (
+              <Button
+                type="primary"
+                onClick={() => handleEdit(index)}
+                icon={<EditOutlined />}
+                style={{ marginRight: '10px' }}
+              >
+                Edit
+              </Button>
+            )}
+            {skill.isEditing && (
               <Button
                 type="link"
                 onClick={() => handleRemoveSkill(index)}
@@ -149,8 +216,8 @@ export const AddSkillsForm: React.FC = () => {
               >
                 Remove
               </Button>
-            </Col>
-          )}
+            )}
+          </Col>
         </Row>
       ))}
       <Form.Item style={{ textAlign: 'center' }}>
@@ -160,26 +227,6 @@ export const AddSkillsForm: React.FC = () => {
           icon={<LeftOutlined />}
           style={{ marginRight: '10px' }}
         />
-        {!isEditing && (
-          <Button
-            type="primary"
-            onClick={handleEdit}
-            icon={<EditOutlined />}
-            style={{ marginRight: '10px' }}
-          >
-            Edit
-          </Button>
-        )}
-        {isEditing && (
-          <Button
-            type="primary"
-            onClick={saveDataToBackend}
-            icon={<SaveOutlined />}
-            style={{ marginRight: '10px' }}
-          >
-            Save
-          </Button>
-        )}
         <Button
           type="default"
           onClick={handleNextSection}

@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { AppLayout } from './layouts/applayout';
 import UserDetailsForm from './pages/userdeatils';
 import { Experience } from './pages/experience';
 import Academics from './pages/academics';
@@ -10,6 +9,7 @@ import { ImageUpload } from './pages/uploadimage';
 import { PreviewResume } from './layouts/previewresume';
 import { DownloadPage } from './layouts/downloadresume';
 import LoginPage from './layouts/loginpage';
+import { AppLayout } from './layouts/applayout';
 
 
 const App: React.FC = () => (

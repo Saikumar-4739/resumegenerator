@@ -1,5 +1,4 @@
-// src/layouts/AppLayout.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Layout, Menu, Button, Drawer, Grid } from 'antd';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -8,11 +7,10 @@ import {
   BookOutlined,
   SmileOutlined,
   FileDoneOutlined,
-  VerticalAlignBottomOutlined,
   EyeOutlined,
   DownloadOutlined,
 } from '@ant-design/icons';
-import '../styles/applayout.css';
+import "../styles/applayout.css";
 
 const { Header, Sider, Content, Footer } = Layout;
 const { useBreakpoint } = Grid;
@@ -23,9 +21,9 @@ export const AppLayout: React.FC = () => {
   const screens = useBreakpoint();
 
   const currentRoute = location.pathname;
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const isLoggedIn = !!localStorage.getItem('token');
 
     if (!isLoggedIn && currentRoute !== '/login') {
@@ -52,7 +50,6 @@ export const AppLayout: React.FC = () => {
     { key: "/academics", icon: <BookOutlined />, label: <Link to="/academics">Academics</Link> },
     { key: "/skills", icon: <SmileOutlined />, label: <Link to="/skills">Skills</Link> },
     { key: "/personal-details", icon: <FileDoneOutlined />, label: <Link to="/personal-details">Personal Details</Link> },
-    { key: "/upload-image", icon: <VerticalAlignBottomOutlined />, label: <Link to="/upload-image">Upload Image</Link> },
     { key: "/preview-resume", icon: <EyeOutlined />, label: <Link to="/preview-resume">Preview Resume</Link> },
     { key: "/download-page", icon: <DownloadOutlined />, label: <Link to="/download-page">Download Resume</Link> },
   ];
@@ -79,15 +76,16 @@ export const AppLayout: React.FC = () => {
           </Sider>
         ) : (
           <Drawer
-            title="Menu"
-            placement="left"
-            closable
-            onClose={toggleDrawer}
-            open={drawerOpen}
-            style={{ padding: 0 }}
-          >
-            <Menu theme="light" mode="inline" selectedKeys={[currentRoute]} items={menuItems} />
-          </Drawer>
+  title="Menu"
+  placement="left"
+  closable
+  onClose={toggleDrawer}
+  open={drawerOpen}
+  styles={{ body: { padding: 0 } }}
+>
+  <Menu theme="light" mode="inline" selectedKeys={[currentRoute]} items={menuItems} />
+</Drawer>
+
         )}
         <Layout style={{ padding: '0 24px', minHeight: '280px' }}>
           <Content
