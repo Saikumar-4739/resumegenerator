@@ -29,6 +29,7 @@ const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 };
 
+// Define TypeScript interfaces
 interface Address {
   street: string;
   city: string;
@@ -64,9 +65,15 @@ interface PersonalDetails {
   motherName: string;
   dateOfBirth: string;
   maritalStatus: string;
-  languagesKnown: string;
+  languagesKnown: string[];
 }
 
+interface Image {
+  id: number;
+  filename: string;
+  path: string;
+  userId: number;
+}
 
 interface UserDetails {
   name: string;
@@ -77,14 +84,13 @@ interface UserDetails {
   academic: Academic[];
   skills: Skills[];
   personalDetails: PersonalDetails;
-  profileImageUrl: string;
+  profileImageUrl?: string;
 }
 
 export const PreviewResume: React.FC = () => {
   const [userDetailsList, setUserDetailsList] = useState<UserDetails[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currentUserIndex, setCurrentUserIndex] = useState<number>(0);
   const navigate = useNavigate();
 
@@ -97,9 +103,16 @@ export const PreviewResume: React.FC = () => {
         }
 
         const response = await axios.post(`http://localhost:3023/users/getUsersByUserIds/${userId}`);
+        const users = response.data.data;
 
         if (response.data.status) {
-          setUserDetailsList(response.data.data);
+          // Map the image path to profileImageUrl
+          const updatedUsers = users.map((user: any) => ({
+            ...user,
+            profileImageUrl: user.image ? `http://localhost:3023/images/uploads/${user.image.path}` : undefined
+          }));
+
+          setUserDetailsList(updatedUsers);
         } else {
           throw new Error(response.data.internalMessage || "Failed to fetch user details");
         }
@@ -255,7 +268,7 @@ export const PreviewResume: React.FC = () => {
           <Input prefix={<FlagOutlined />} value={userDetails.personalDetails.maritalStatus} readOnly />
         </Item>
         <Item label="Languages Known">
-          <Input prefix={<GlobalOutlined />} value={userDetails.personalDetails.languagesKnown} readOnly />
+          <Input prefix={<GlobalOutlined />} value={userDetails.personalDetails.languagesKnown.join(', ')} readOnly />
         </Item>
 
         <Form.Item {...tailLayout}>

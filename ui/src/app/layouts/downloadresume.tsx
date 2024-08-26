@@ -5,11 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "../styles/downloadresume.css";
 import Template1 from '../template-layouts/template-1';
-import Template2 from '../template-layouts/template-2';
-import Template3 from '../template-layouts/template-3';
-import Template4 from '../template-layouts/template-4';
-import Template5 from '../template-layouts/template-5';
-import Template6 from '../template-layouts/template-6';
+// import Template2 from '../template-layouts/template-2';
+// import Template3 from '../template-layouts/template-3';
+// import Template4 from '../template-layouts/template-4';
+// import Template5 from '../template-layouts/template-5';
+// import Template6 from '../template-layouts/template-6';
 import { UserDetails } from './types';
 
 export const DownloadPage: React.FC = () => {
@@ -17,6 +17,7 @@ export const DownloadPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<number>(1);
+  const [base64Images, setBase64Images] = useState<{ [key: number]: string }>({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,22 +31,44 @@ export const DownloadPage: React.FC = () => {
         const response = await axios.post(`http://localhost:3023/users/getUsersByUserIds/${userId}`);
 
         if (response.data.status) {
-          const users = response.data.data; 
+          const users = response.data.data.map((user: UserDetails) => ({
+            ...user,
+            profileImageUrl: user.image ? `http://localhost:3023/images/uploads/${user.image.path}` : undefined
+          }));
           setUserDetails(users);
+          await convertImagesToBase64(users);
         } else {
           throw new Error(response.data.internalMessage || "Failed to fetch user details");
         }
       } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-          message.error("Failed to fetch user details");
-        } else {
-          setError("An unknown error occurred");
-          message.error("Failed to fetch user details");
-        }
+        setError(error instanceof Error ? error.message : "An unknown error occurred");
+        message.error("Failed to fetch user details");
       } finally {
         setLoading(false);
       }
+    };
+
+    const convertImagesToBase64 = async (users: UserDetails[]) => {
+      const images: { [key: number]: string } = {};
+      await Promise.all(users.map(async (user, index) => {
+        if (user.profileImageUrl) {
+          try {
+            const response = await fetch(user.profileImageUrl);
+            if (!response.ok) throw new Error("Image fetch failed");
+
+            const blob = await response.blob();
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              images[index] = reader.result as string;
+              console.log(`Converted image for user at index ${index}:`, images[index]); // Debug log
+              setBase64Images(prev => ({ ...prev, ...images }));
+            };
+            reader.readAsDataURL(blob);
+          } catch (error) {
+            console.error(`Error converting image for user at index ${index}:`, error);
+          }
+        }
+      }));
     };
 
     fetchUserDetails();
@@ -98,20 +121,20 @@ export const DownloadPage: React.FC = () => {
     navigate("/preview-resume");
   };
 
-  const renderTemplate = (templateNumber: number, user: UserDetails) => {
+  const renderTemplate = (templateNumber: number, user: UserDetails, index: number) => {
     switch (templateNumber) {
       case 1:
-        return <Template1 userDetails={user} />;
-      case 2:
-        return <Template2 userDetails={user} />;
-      case 3:
-        return <Template3 userDetails={user} />;
-      case 4:
-        return <Template4 userDetails={user} />;
-      case 5:
-        return <Template5 userDetails={user} />;
-      case 6:
-        return <Template6 userDetails={user} />;
+        return <Template1 userDetails={{ ...user, profileImageUrl: base64Images[index] }} />;
+      // case 2:
+      //   return <Template2 userDetails={{ ...user, profileImageUrl: base64Images[index] }} />;
+      // case 3:
+      //   return <Template3 userDetails={{ ...user, profileImageUrl: base64Images[index] }} />;
+      // case 4:
+      //   return <Template4 userDetails={{ ...user, profileImageUrl: base64Images[index] }} />;
+      // case 5:
+      //   return <Template5 userDetails={{ ...user, profileImageUrl: base64Images[index] }} />;
+      // case 6:
+      //   return <Template6 userDetails={{ ...user, profileImageUrl: base64Images[index] }} />;
       default:
         return null;
     }
@@ -120,7 +143,7 @@ export const DownloadPage: React.FC = () => {
   const renderTemplates = () => {
     return userDetails.map((user, index) => (
       <div key={index} className="resume-content">
-        {renderTemplate(selectedTemplate, user)}
+        {renderTemplate(selectedTemplate, user, index)}
       </div>
     ));
   };
@@ -148,42 +171,15 @@ export const DownloadPage: React.FC = () => {
         </Button>
       </div>
       <div className="template-selection">
-        <Button
-          type={selectedTemplate === 1 ? 'primary' : 'default'}
-          onClick={() => setSelectedTemplate(1)}
-        >
-          Template 1
-        </Button>
-        <Button
-          type={selectedTemplate === 2 ? 'primary' : 'default'}
-          onClick={() => setSelectedTemplate(2)}
-        >
-          Template 2
-        </Button>
-        <Button
-          type={selectedTemplate === 3 ? 'primary' : 'default'}
-          onClick={() => setSelectedTemplate(3)}
-        >
-          Template 3
-        </Button>
-        <Button
-          type={selectedTemplate === 4 ? 'primary' : 'default'}
-          onClick={() => setSelectedTemplate(4)}
-        >
-          Template 4
-        </Button>
-        <Button
-          type={selectedTemplate === 5 ? 'primary' : 'default'}
-          onClick={() => setSelectedTemplate(5)}
-        >
-          Template 5
-        </Button>
-        <Button
-          type={selectedTemplate === 6 ? 'primary' : 'default'}
-          onClick={() => setSelectedTemplate(6)}
-        >
-          Template 6
-        </Button>
+        {[1, 2, 3, 4, 5, 6].map((templateNumber) => (
+          <Button
+            key={templateNumber}
+            type={selectedTemplate === templateNumber ? 'primary' : 'default'}
+            onClick={() => setSelectedTemplate(templateNumber)}
+          >
+            Template {templateNumber}
+          </Button>
+        ))}
       </div>
       <div id="resume-content">
         {renderTemplates()}
