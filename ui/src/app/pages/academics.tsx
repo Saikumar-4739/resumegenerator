@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, notification, Row, Col } from 'antd';
+import { Form, Input, Button, Row, Col, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { SaveOutlined, RightOutlined, LeftOutlined, PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
@@ -14,18 +14,11 @@ interface Academics {
 
 const AddAcademicsForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [academicList, setAcademicList] = useState<Academics[]>([
-    {
-      institutionName: '',
-      passingYear: 0,
-      qualification: '',
-      university: '',
-      percentage: 0,
-    },
-  ]);
+  const [academicList, setAcademicList] = useState<Academics[]>([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingExisting, setIsEditingExisting] = useState(false);
   const navigate = useNavigate();
-  const [userId] = useState<string | null>(localStorage.getItem('userId'));
+  const userId = localStorage.getItem('userId');
 
   useEffect(() => {
     if (userId) {
@@ -39,106 +32,41 @@ const AddAcademicsForm: React.FC = () => {
       const backendData: Academics[] = response.data.data;
       setAcademicList(backendData);
       form.setFieldsValue({ academicList: backendData });
-    } catch {
-      notification.warning({
-        message: 'Error',
-        description: 'Failed to fetch academics data',
-        className: 'custom-notification',
-      });
-    }
-  };
-
-  const createAcademicData = async () => {
-    if (!userId) {
-      notification.error({
-        message: 'Error',
-        description: 'User ID not found. Please make sure you have saved user details.',
-      });
-      return;
-    }
-
-    const data = { userId, academicList };
-    try {
-      const response = await axios.post('http://localhost:3023/academics/create', data);
-      if (response.status === 200) {
-        notification.success({
-          message: 'Success',
-          description: 'Data saved successfully!',
-          className: 'custom-notification',
-        });
-        // Optionally, re-fetch data or clear form
-        fetchAcademicData(userId);
-      } else {
-        notification.error({
-          message: 'Error',
-          description: 'Failed to save data. Server response was not OK.',
-          className: 'custom-notification',
-        });
-      }
+      setIsEditingExisting(backendData.length > 0); // Set editing state based on existing data
     } catch (error) {
-      console.error('Create Error:', error);
-      notification.error({
-        message: 'Error',
-        description: 'Failed to save data. Please check the console for more details.',
-        className: 'custom-notification',
-      });
+      message.error(`Failed to fetch academic data. Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
-  const updateAcademicData = async () => {
-    if (!userId) {
-      notification.error({
-        message: 'Error',
-        description: 'User ID not found. Please make sure you have saved user details.',
-      });
-      return;
-    }
-
-    const data = { userId, academicList };
+  const handleSave = async () => {
     try {
-      const response = await axios.post(`http://localhost:3023/academics/update/${userId}`, data);
-      if (response.status === 200) {
-        notification.success({
-          message: 'Success',
-          description: 'Data updated successfully!',
-          className: 'custom-notification',
-        });
-        setIsEditing(false); // Exit edit mode
-        fetchAcademicData(userId); // Re-fetch data to ensure all forms are updated
+      const values = await form.validateFields();
+      const data = { userId, academicList: values.academicList || [] };
+
+      console.log('Submitting data:', data); // Debugging: Log data being sent
+
+      if (isEditingExisting) {
+        // Update existing data
+        const response = await axios.post(`http://localhost:3023/academics/update/${userId}`, data);
+        console.log('Update response:', response.data); // Debugging: Log response from the update request
+        message.success('Data updated successfully!');
       } else {
-        notification.error({
-          message: 'Error',
-          description: 'Failed to update data. Server response was not OK.',
-          className: 'custom-notification',
-        });
+        // Create new data
+        const response = await axios.post('http://localhost:3023/academics/create', data);
+        console.log('Create response:', response.data); // Debugging: Log response from the create request
+        message.success('Data saved successfully!');
+        setIsEditingExisting(true); // Switch to editing mode after creating
       }
+
+      fetchAcademicData(userId); // Re-fetch data to update the form
+      setIsEditing(false); // Exit edit mode
     } catch (error) {
-      console.error('Update Error:', error);
-      notification.error({
-        message: 'Error',
-        description: 'Failed to update data. Please check the console for more details.',
-        className: 'custom-notification',
-      });
+      console.error('Save error:', error); // Debugging: Log any errors encountered
+      message.error(`Failed to save data. Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
-  const handleSave = () => {
-    form.validateFields()
-      .then(() => {
-        const values = form.getFieldsValue();
-        setAcademicList(values.academicList || []);
-        if (isEditing) {
-          updateAcademicData();
-        } else {
-          createAcademicData();
-        }
-      })
-      .catch(errorInfo => {
-        console.log('Validation Failed:', errorInfo);
-      });
-  };
-
-  const handleFieldChange = (index: number, field: keyof Academics, value: unknown) => {
+  const handleFieldChange = (index: number, field: keyof Academics, value: any) => {
     const updatedList = [...academicList];
     updatedList[index] = { ...updatedList[index], [field]: value };
     setAcademicList(updatedList);
@@ -150,131 +78,84 @@ const AddAcademicsForm: React.FC = () => {
       ...prev,
       { institutionName: '', passingYear: 0, qualification: '', university: '', percentage: 0 },
     ]);
-    // Optionally, you might want to call createAcademicData if adding should persist immediately
   };
 
-  const handleNextSection = () => {
-    navigate('/skills');
-  };
+  const handleNextSection = () => navigate('/skills');
+  const handlePreviousSection = () => navigate('/experience');
 
-  const handlePreviousSection = () => {
-    navigate('/experience');
+  const toggleEditMode = () => {
+    if (isEditing) {
+      handleSave(); // Save changes if currently in edit mode
+    } else {
+      setIsEditing(true); // Enter edit mode
+    }
   };
 
   return (
-    <Form
-      form={form}
-      name="academics"
-      initialValues={{ academicList }}
-      layout="vertical"
-    >
-      {academicList.map((academic, index) => (
-        <Row gutter={[16, 16]} key={index}>
-          <Col xs={24} sm={12}>
-            <Form.Item
-              label="Institution Name"
-              name={['academicList', index, 'institutionName']}
-              rules={[{ required: true, message: 'Please input your institution name!' }]}
-            >
-              <Input
-                value={academic.institutionName}
-                onChange={(event) => handleFieldChange(index, 'institutionName', event.target.value)}
-                disabled={!isEditing}
-              />
-            </Form.Item>
-          </Col>
-          <Col xs={24} sm={12}>
-            <Form.Item
-              label="Passing Year"
-              name={['academicList', index, 'passingYear']}
-              rules={[{ required: true, message: 'Please input your passing year!' }]}
-            >
-              <Input
-                type="number"
-                value={academic.passingYear}
-                onChange={(event) => handleFieldChange(index, 'passingYear', Number(event.target.value))}
-                disabled={!isEditing}
-              />
-            </Form.Item>
-          </Col>
-          <Col xs={24} sm={12}>
-            <Form.Item
-              label="Qualification"
-              name={['academicList', index, 'qualification']}
-              rules={[{ required: true, message: 'Please input your qualification!' }]}
-            >
-              <Input
-                value={academic.qualification}
-                onChange={(event) => handleFieldChange(index, 'qualification', event.target.value)}
-                disabled={!isEditing}
-              />
-            </Form.Item>
-          </Col>
-          <Col xs={24} sm={12}>
-            <Form.Item
-              label="University"
-              name={['academicList', index, 'university']}
-              rules={[{ required: true, message: 'Please input your university!' }]}
-            >
-              <Input
-                value={academic.university}
-                onChange={(event) => handleFieldChange(index, 'university', event.target.value)}
-                disabled={!isEditing}
-              />
-            </Form.Item>
-          </Col>
-          <Col xs={24} sm={12}>
-            <Form.Item
-              label="Percentage"
-              name={['academicList', index, 'percentage']}
-              rules={[{ required: true, message: 'Please input your percentage!' }]}
-            >
-              <Input
-                type="number"
-                value={academic.percentage}
-                onChange={(event) => handleFieldChange(index, 'percentage', Number(event.target.value))}
-                disabled={!isEditing}
-              />
-            </Form.Item>
-          </Col>
-        </Row>
-      ))}
-      <Form.Item style={{ textAlign: "center" }}>
-        <Button
-          type="default"
-          onClick={handlePreviousSection}
-          icon={<LeftOutlined />}
-          style={{ marginRight: '10px' }}
-        >
-          Previous
-        </Button>
-        <Button
-          type="primary"
-          onClick={handleSave}
-          icon={<SaveOutlined />}
-          style={{ marginRight: '10px' }}
-        >
-          {isEditing ? 'Save' : 'Edit'}
-        </Button>
-        <Button
-          type="default"
-          onClick={handleNextSection}
-          icon={<RightOutlined />}
-        >
-          Next
-        </Button>
-        <Button
-          type="dashed"
-          onClick={handleAddAcademic}
-          icon={<PlusOutlined />}
-          style={{ marginLeft: '8px' }}
-        >
-          Add More Qualification
-        </Button>
-      </Form.Item>
-    </Form>
+    <div>
+      <h2>Academics</h2>
+      <Form
+        form={form}
+        name="academics"
+        layout="vertical"
+        initialValues={{ academicList }}
+      >
+        {academicList.map((academic, index) => (
+          <Row gutter={[16, 16]} key={index}>
+            {['institutionName', 'passingYear', 'qualification', 'university', 'percentage'].map((field, i) => (
+              <Col xs={24} sm={12} key={i}>
+                <Form.Item
+                  label={field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+                  name={['academicList', index, field]}
+                  rules={[{ required: true, message: `Please input your ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}!` }]}
+                >
+                  <Input
+                    type={field === 'passingYear' || field === 'percentage' ? 'number' : 'text'}
+                    value={academic[field]}
+                    onChange={e => handleFieldChange(index, field as keyof Academics, field === 'passingYear' || field === 'percentage' ? Number(e.target.value) : e.target.value)}
+                    disabled={!isEditing} // Disable fields when not in editing mode
+                  />
+                </Form.Item>
+              </Col>
+            ))}
+          </Row>
+        ))}
+        <Form.Item style={{ textAlign: "center" }}>
+          <Button
+            type="default"
+            onClick={handlePreviousSection}
+            icon={<LeftOutlined />}
+            style={{ marginRight: '10px' }}
+          >
+            Previous
+          </Button>
+          <Button
+            type="primary"
+            onClick={toggleEditMode} // Toggle edit mode or save changes
+            icon={<SaveOutlined />}
+            style={{ marginRight: '10px' }}
+          >
+            {isEditing ? 'Save' : 'Edit'}
+          </Button>
+          <Button
+            type="default"
+            onClick={handleNextSection}
+            icon={<RightOutlined />}
+          >
+            Next
+          </Button>
+          <Button
+            type="dashed"
+            onClick={handleAddAcademic}
+            icon={<PlusOutlined />}
+            style={{ marginLeft: '8px' }}
+          >
+            Add More Qualification
+          </Button>
+        </Form.Item>
+      </Form>
+    </div>
   );
 };
-
 
 export default AddAcademicsForm;

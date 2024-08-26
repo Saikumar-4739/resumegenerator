@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, notification, Row, Col } from 'antd';
+import { Form, Input, Button, message, Row, Col } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { SaveOutlined, EditOutlined, PlusOutlined, RightOutlined, LeftOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import "./styles/skills.css"
 
 interface Skill {
   id?: string;
@@ -47,18 +48,12 @@ export const AddSkillsForm: React.FC = () => {
 
   const handleFetchError = (error: unknown) => {
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-    notification.error({
-      message: 'Error',
-      description: `Failed to fetch skills data: ${errorMessage}`,
-    });
+    message.error(`Failed to fetch skills data. Error: ${errorMessage}`);
   };
 
   const updateSkillsData = async (index: number) => {
     if (!userId) {
-      notification.error({
-        message: 'Error',
-        description: 'User ID not found. Please make sure you have saved user details.',
-      });
+      message.error('User ID not found. Please make sure you have saved user details.');
       return;
     }
 
@@ -73,10 +68,7 @@ export const AddSkillsForm: React.FC = () => {
     try {
       await axios.post(`http://localhost:3023/skills/update/${userId}`, { skills: [updateData] });
 
-      notification.success({
-        message: 'Success',
-        description: 'Skill updated successfully!',
-      });
+      message.success('Skill updated successfully!');
 
       // Update the isEditing state of the skill after successful save
       const updatedSkillsList = [...skillsList];
@@ -90,10 +82,7 @@ export const AddSkillsForm: React.FC = () => {
 
   const createSkillsData = async (index: number) => {
     if (!userId) {
-      notification.error({
-        message: 'Error',
-        description: 'User ID not found. Please make sure you have saved user details.',
-      });
+      message.error('User ID not found. Please make sure you have saved user details.');
       return;
     }
 
@@ -102,10 +91,7 @@ export const AddSkillsForm: React.FC = () => {
     try {
       await axios.post('http://localhost:3023/skills/createSkill', { skills: [skill] });
 
-      notification.success({
-        message: 'Success',
-        description: 'Skill saved successfully!',
-      });
+      message.success('Skill saved successfully!');
 
       const updatedSkillsList = [...skillsList];
       updatedSkillsList[index].isEditing = false;
@@ -117,10 +103,7 @@ export const AddSkillsForm: React.FC = () => {
 
   const handleSaveError = (error: unknown) => {
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-    notification.error({
-      message: 'Error',
-      description: `Failed to save skill data: ${errorMessage}`,
-    });
+    message.error(`Failed to save skill data. Error: ${errorMessage}`);
   };
 
   const handleEdit = (index: number) => {

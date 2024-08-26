@@ -1,23 +1,45 @@
+/* Import Cascadia Font */
+@font-face {
+  font-family: 'Cascadia Code', monospace;
+  src: local('Cascadia Code'), url('/assets/fonts/cascadia-code.woff2') format('woff2');
+}
+
 /* General Layout Styles */
 .site-layout-background {
-  background: #f0f2f5; /* Background color for the layout */
+  background: #001529; /* Background color for Sider */
 }
 
 /* Header Styles */
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 0 24px;
   background: #001529; /* Header background color */
   color: #fff; /* Header text color */
   border-bottom: 1px solid #1890ff; /* Bottom border color */
+  font-family: 'Cascadia Code', monospace; /* Font for header */
+}
+
+.menu-trigger {
+  font-size: 16px;
+  width: 64px;
+  height: 64px;
+  background: #001529;
+  color: #fff;
+  border: none;
+  margin-right: 16px;
+}
+
+.menu-trigger:hover {
+  background: #1890ff;
 }
 
 .logo {
+  flex: 1;
   font-size: 1.5rem;
   color: #fff;
   font-weight: bold;
+  text-align: center;
 }
 
 .header-right {
@@ -25,40 +47,32 @@
   align-items: center;
 }
 
-.header-right .ant-btn {
-  background: #1890ff; /* Button background color */
-  border: none;
-  color: #fff; /* Button text color */
-}
-
-.header-right .ant-btn:hover {
-  background: #40a9ff; /* Button hover background color */
-}
-
 /* Sider Styles */
 .ant-layout-sider {
-  background: #001529; /* Same as header background color */
-  color: #fff; /* Text color in Sider */
+  background: #001529; /* Background color for Sider */
+  color: #fff; /* Default text color in Sider */
+  font-family: 'Cascadia Code', monospace; /* Font for Sider */
 }
 
 .ant-menu {
-  background: #001529; /* Same as header background color */
-  border-right: 1px solid #1890ff; /* Border color to match header */
+  background: #001529; /* Background color for Menu in Sider */
+  border-right: 1px solid #1890ff; /* Border color for Menu */
 }
 
 .ant-menu-item,
 .ant-menu-submenu-title {
-  color: #fff; /* Text color in menu items */
+  color: #fff !important; /* Default text color for Menu items and Submenu titles */
+  font-family: 'Cascadia Code', monospace; /* Font for Menu items and Submenu titles */
 }
 
 .ant-menu-item-active {
-  background: #1890ff; /* Background color for active menu item */
-  color: #fff; /* Text color for active menu item */
+  background: #050b11; /* Background color for active menu item */
+  color: #fff !important; /* Text color for active menu item */
 }
 
 .ant-menu-item:hover {
-  background: #40a9ff; /* Background color for hover effect */
-  color: #fff; /* Text color for hover effect */
+  background: #020f1a; /* Background color for hover effect */
+  color: #fff !important; /* Ensure white text color for hover effect */
 }
 
 /* Drawer Styles */
@@ -81,6 +95,7 @@
   padding: 24px;
   margin: 0;
   min-height: 280px;
+  font-family: 'Cascadia Code', monospace; /* Font for content */
 }
 
 /* Footer Styles */
@@ -89,4 +104,5 @@
   background: #f0f2f5; /* Footer background color */
   padding: 16px;
   border-top: 1px solid #ddd; /* Footer border color */
+  font-family: 'Cascadia Code', monospace; /* Font for footer */
 }

@@ -1,0 +1,16 @@
+/* AddSkillsForm.css */
+
+.custom-notification-error .ant-notification-notice-content {
+    background: #fff3f3;
+    color: #f5222d;
+    border: 1px solid #f5222d;
+    border-radius: 4px;
+  }
+  
+  .custom-notification-success .ant-notification-notice-content {
+    background: #f6ffed;
+    color: #52c41a;
+    border: 1px solid #52c41a;
+    border-radius: 4px;
+  }
+  

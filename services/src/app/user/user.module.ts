@@ -11,19 +11,23 @@ import { ExperienceModule } from '../experience/experience.module';
 import { AcademicModule } from '../academics/academics.module';
 import { SkillModule } from '../skills/skills.module';
 import { PersonalDetailsModule } from '../personal-details/personal-details.module';
+import { ImageModule } from '../image/image.module';
+import { ImageService } from '../image/image.services';
+import {Image} from "../image/image.entities";
 
 
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity, AddressEntities]),
+    TypeOrmModule.forFeature([UserEntity, AddressEntities, Image]),
     AddressModule,
     ExperienceModule,
     AcademicModule,
     SkillModule,
-    PersonalDetailsModule
+    PersonalDetailsModule,
+    ImageModule,
   ],
-  providers: [UserService,  UserRepo, AddressRepo],
+  providers: [UserService,  UserRepo, AddressRepo, ImageService],
   controllers: [UserController],
 })
 export class UserModule {} 

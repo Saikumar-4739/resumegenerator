@@ -9,6 +9,8 @@ import {
   FileDoneOutlined,
   EyeOutlined,
   DownloadOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined
 } from '@ant-design/icons';
 import "../styles/applayout.css";
 
@@ -19,9 +21,11 @@ export const AppLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const screens = useBreakpoint();
+  
+  const [collapsed, setCollapsed] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const currentRoute = location.pathname;
-  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     const isLoggedIn = !!localStorage.getItem('token');
@@ -50,6 +54,7 @@ export const AppLayout: React.FC = () => {
     { key: "/academics", icon: <BookOutlined />, label: <Link to="/academics">Academics</Link> },
     { key: "/skills", icon: <SmileOutlined />, label: <Link to="/skills">Skills</Link> },
     { key: "/personal-details", icon: <FileDoneOutlined />, label: <Link to="/personal-details">Personal Details</Link> },
+    { key: "/image", icon: <FileDoneOutlined />, label: <Link to="/image">Image</Link> },
     { key: "/preview-resume", icon: <EyeOutlined />, label: <Link to="/preview-resume">Preview Resume</Link> },
     { key: "/download-page", icon: <DownloadOutlined />, label: <Link to="/download-page">Download Resume</Link> },
   ];
@@ -61,6 +66,12 @@ export const AppLayout: React.FC = () => {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Header className="header">
+        <Button
+          type="text"
+          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          onClick={() => setCollapsed(!collapsed)}
+          className="menu-trigger"
+        />
         <div className="logo">Resume Generator</div>
         <div className="header-right">
           <Button type="primary" onClick={handleLogout}>Logout</Button>
@@ -71,21 +82,20 @@ export const AppLayout: React.FC = () => {
       </Header>
       <Layout>
         {screens.md ? (
-          <Sider width={200} className="site-layout-background">
-            <Menu theme="light" mode="inline" selectedKeys={[currentRoute]} items={menuItems} />
+          <Sider trigger={null} collapsible collapsed={collapsed} className="site-layout-background">
+            <Menu theme="dark" mode="inline" selectedKeys={[currentRoute]} items={menuItems} />
           </Sider>
         ) : (
           <Drawer
-  title="Menu"
-  placement="left"
-  closable
-  onClose={toggleDrawer}
-  open={drawerOpen}
-  styles={{ body: { padding: 0 } }}
->
-  <Menu theme="light" mode="inline" selectedKeys={[currentRoute]} items={menuItems} />
-</Drawer>
-
+            title="Menu"
+            placement="left"
+            closable
+            onClose={toggleDrawer}
+            open={drawerOpen}
+            styles={{ body: { padding: 0 } }}
+          >
+            <Menu theme="dark" mode="inline" selectedKeys={[currentRoute]} items={menuItems} />
+          </Drawer>
         )}
         <Layout style={{ padding: '0 24px', minHeight: '280px' }}>
           <Content

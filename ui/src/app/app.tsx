@@ -21,7 +21,7 @@ const App: React.FC = () => (
         <Route path="/academics" element={<Academics />} />
         <Route path="/skills" element={<AddSkillsForm />} />
         <Route path="/personal-details" element={<PersonalDetailsForm />} />
-        <Route path="/upload-image" element={<ImageUpload />} />
+        <Route path="/image" element={<ImageUpload />} />
         <Route path="/preview-resume" element={<PreviewResume />} />
         <Route path="/download-page" element={<DownloadPage />} />
         <Route path="/login" element={<LoginPage />} />

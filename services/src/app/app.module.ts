@@ -13,6 +13,7 @@ import { ImageModule } from './image/image.module';
 
 
 
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -32,7 +33,7 @@ import { ImageModule } from './image/image.module';
     ExperienceModule,
     SkillModule,
     PersonalDetailsModule,
-    ImageModule
+    ImageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

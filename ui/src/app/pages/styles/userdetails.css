@@ -1,0 +1,19 @@
+  /* Apply Cascadia Code font to the entire form */
+
+
+  @import url('https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;700&display=swap');
+  
+  .ant-form-item {
+    font-family: 'Cascadia Code', monospace;
+  }
+  
+  /* Optional: Ensure inputs also use the font */
+  .ant-input, .ant-btn {
+    font-family: 'Cascadia Code', monospace;
+  }
+  
+  /* Optional: Adjust title font if needed */
+  .ant-typography {
+    font-family: 'Cascadia Code', monospace;
+  }
+  

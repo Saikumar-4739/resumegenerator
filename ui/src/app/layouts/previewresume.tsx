@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, Form, message } from "antd";
+import { Button, Input, Form, message, Image } from "antd";
 import { useNavigate } from "react-router-dom";
 import {
   UserOutlined,
@@ -67,10 +67,6 @@ interface PersonalDetails {
   languagesKnown: string;
 }
 
-interface Declaration {
-  declaration: string;
-  place: string;
-}
 
 interface UserDetails {
   name: string;
@@ -81,7 +77,7 @@ interface UserDetails {
   academic: Academic[];
   skills: Skills[];
   personalDetails: PersonalDetails;
-  declaration: Declaration;
+  profileImageUrl: string;
 }
 
 export const PreviewResume: React.FC = () => {
@@ -153,6 +149,17 @@ export const PreviewResume: React.FC = () => {
     <div className="resume-preview">
       <h1>Preview Resume Details</h1>
       <Form layout="vertical" className="user-id-input" style={{ maxWidth: '600px', margin: '0 auto' }}>
+        {/* Display Image */}
+        {userDetails.profileImageUrl && (
+          <Item label="Profile Image">
+            <Image
+              width={200} 
+              src={userDetails.profileImageUrl}
+              alt="Profile"
+            />
+          </Item>
+        )}
+
         <Item label="Full Name">
           <Input prefix={<UserOutlined />} value={userDetails.name} readOnly />
         </Item>
@@ -177,7 +184,7 @@ export const PreviewResume: React.FC = () => {
         <Item label="Zipcode">
           <Input prefix={<GlobalOutlined />} value={userDetails.address.zipcode} readOnly />
         </Item>
-        
+
         {userDetails.experience.map((exp, index) => (
           <React.Fragment key={index}>
             <h3>Experience {index + 1}</h3>

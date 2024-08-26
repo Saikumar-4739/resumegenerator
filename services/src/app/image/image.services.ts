@@ -1,11 +1,9 @@
-// image.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Image } from './image.entities';
-import { CreateImageDto } from './models/create.image.model';
+import { Image } from './image.entities'
+import CreateImageDto from './models/create-image.dto';
 import { ImageModel } from './models/image.model';
-
 
 @Injectable()
 export class ImageService {
@@ -25,6 +23,7 @@ export class ImageService {
     return images as ImageModel[];
   }
 
+  // Update this method
   async findByUserId(userId: number): Promise<ImageModel[]> {
     const images = await this.imageRepository.find({ where: { userId } });
     return images as ImageModel[];

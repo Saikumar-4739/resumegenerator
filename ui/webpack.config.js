@@ -34,8 +34,7 @@ module.exports = merge({
     alias: {
       'html2pdf.js': false,
     }
-  }
-}, {
+  },
   module: {
     rules: [
       {
@@ -57,7 +56,21 @@ module.exports = merge({
             }
           }
         ]
-      }
-    ]
-  }
+      },
+      // Rule for handling font files
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+              outputPath: 'assets/fonts/',
+              publicPath: '/assets/fonts/',
+            },
+          },
+        ],
+      },
+    ],
+  },
 });

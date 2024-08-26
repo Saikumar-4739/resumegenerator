@@ -3,3 +3,4 @@ export class UpdateImageDto {
     path?: string;
     userId?: number;
   }
+  

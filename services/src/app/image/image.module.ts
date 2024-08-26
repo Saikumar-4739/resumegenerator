@@ -1,8 +1,7 @@
-// image.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ImageController } from './image.controller';
-import { Image } from './image.entities';
+import { Image } from './image.entities'
 import { ImageService } from './image.services';
 
 

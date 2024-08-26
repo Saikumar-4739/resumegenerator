@@ -13,20 +13,18 @@ import UserDetailedInfoModel from './models/user-detailed-info.model';
 import { AcademicService } from '../academics/academics.services';
 import { SkillService } from '../skills/skills.services';
 import { PersonalDetailsService } from '../personal-details/personal-details.services';
-
-
+import { ImageService } from '../image/image.services';
 
 @Injectable()
 export class UserService {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  AddressRepo: any;
   constructor(
     private userRepo: UserRepo,
     private addressService: AddressService,
     private experienceService: ExperienceService,
     private academicService: AcademicService,
     private skillService: SkillService,
-    private personalDetailService: PersonalDetailsService
+    private personalDetailService: PersonalDetailsService,
+    private imageService: ImageService,
   ) {}
 
   async createUser(userData: UserCreateRequest): Promise<UserResponse> {
@@ -120,16 +118,6 @@ export class UserService {
 
   async updateUser(req: UserCreateRequest): Promise<UserResponse> {
     try {
-        // const mobileNo = Number(req.mobileNo);
-        // if (isNaN(mobileNo)) {
-        //     return {
-        //         status: false,
-        //         internalMessage: 'Invalid mobile number format',
-        //         data: [],
-        //         errorCode: 4, // New error code for invalid mobile number
-        //     };
-        // }
-
         const userToUpdate = await this.userRepo.findOne({ where: { userId: req.userId } });
 
         if (!userToUpdate) {
@@ -143,8 +131,7 @@ export class UserService {
         userToUpdate.name = req.uname;
         userToUpdate.email = req.email;
         userToUpdate.mobile = req.mobileNo;
-
-        // Update address if provided
+        
         if (req.address && req.address.length > 0) {
             try {
                 await this.addressService.updateAddress(req.address[0]);
@@ -222,6 +209,9 @@ export class UserService {
         userDetailedModel.academic = (await this.academicService.getAcademicsByUserId(user.userId)).data;
         userDetailedModel.skills = (await this.skillService.getSkillsByUserId(user.userId)).data;
         userDetailedModel.personalDetails = (await this.personalDetailService.getPersonalDetailsByUserId(user.userId)).data[0];
+        userDetailedModel.image = (await this.imageService.findByUserId(user.userId))[0];
+
+
   
         return userDetailedModel;
       }));

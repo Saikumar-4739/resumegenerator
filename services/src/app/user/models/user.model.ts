@@ -6,5 +6,5 @@ export class UserModel {
     mobileNo: string;
     createdate?: Date;
     userId?: number;
-    address: AddressModel| null ;
+    address: AddressModel | null ;
 }
