@@ -25,7 +25,7 @@
 }
 
 #resume-content {
-  width: 210mm; /* A4 width */
+  width: 190mm; 
   min-height: 297mm; /* A4 height */
   overflow: hidden;
   position: relative;
@@ -53,3 +53,13 @@
     width: 100%;
   }
 }
+
+#resume-content {
+  width: 210mm; /* Adjust as needed */
+  margin: 0 auto; /* Center the content */
+}
+
+.resume-content {
+  width: 100%; /* Ensure content takes full width of parent */
+}
+

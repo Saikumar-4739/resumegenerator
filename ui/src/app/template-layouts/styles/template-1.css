@@ -1,26 +1,34 @@
-.template1 {
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
   font-family: Arial, sans-serif;
-  margin: 20px;
 }
-
 .content-container {
-  max-width: 800px;
-  margin: auto;
+  width: 100%;
 }
 
-.header {
+.header1 {
   display: flex;
   align-items: center;
+  padding: 2%;
+  width: 100%;
+  height: fit-content;
+  background-color: rgb(14, 14, 37);
+  color: azure;
 }
 
 .user-image-header {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   margin-right: 20px;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
-.contact-item, .section {
+.contact-item,
+.section {
   margin-bottom: 20px;
 }
 
@@ -34,7 +42,46 @@
 }
 
 .user-image img {
-  max-width: 100%;
-  height: auto;
+  width: 100%;
   border-radius: 8px;
+}
+
+.mainBox {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.leftBox,
+.rightBox {
+  width: 50%;
+  padding: 1%;
+  margin: 0;
+}
+.rightBox{
+  align-self: flex-start;
+}
+.skillBoxMain{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  
+}
+.skillBox{  
+  margin: 7px;
+  padding: 10px;
+  background-color: rgb(19, 239, 92);
+  color: rgb(44, 44, 44);
+  padding: 5px;
+  width: fit-content;
+  border-radius: 10%;
+}
+@media (max-width: 768px) {
+  .template1 {
+    width: 100%; /* Full width on smaller screens */
+    padding: 10px;
+  }
 }

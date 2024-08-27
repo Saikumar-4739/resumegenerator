@@ -1,48 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { Button, message } from 'antd';
-import html2pdf from 'html2pdf.js';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import "../styles/downloadresume.css";
-import Template1 from '../template-layouts/template-1';
-// import Template2 from '../template-layouts/template-2';
-// import Template3 from '../template-layouts/template-3';
-// import Template4 from '../template-layouts/template-4';
-// import Template5 from '../template-layouts/template-5';
-// import Template6 from '../template-layouts/template-6';
 import { UserDetails } from './types';
+import '../styles/downloadresume.css';
+import Template1 from '../template-layouts/template-1';
+import axios from 'axios';
 
 export const DownloadPage: React.FC = () => {
-  const [userDetails, setUserDetails] = useState<UserDetails[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<number>(1);
-  const [base64Images, setBase64Images] = useState<{ [key: number]: string }>({});
+  const [userDetails, setUserDetails] = React.useState<UserDetails[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = React.useState<number>(1);
+  const [base64Images, setBase64Images] = React.useState<{
+    [key: number]: string;
+  }>({});
   const navigate = useNavigate();
 
-  useEffect(() => {
+  React.useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const userId = parseInt(localStorage.getItem("userId") || "0");
+        const userId = parseInt(localStorage.getItem('userId') || '0');
         if (!userId) {
-          throw new Error("User ID is not available");
+          throw new Error('User ID is not available');
         }
 
-        const response = await axios.post(`http://localhost:3023/users/getUsersByUserIds/${userId}`);
+        const response = await axios.post(
+          `http://localhost:3023/users/getUsersByUserIds/${userId}`
+        );
 
         if (response.data.status) {
           const users = response.data.data.map((user: UserDetails) => ({
             ...user,
-            profileImageUrl: user.image ? `http://localhost:3023/images/uploads/${user.image.path}` : undefined
+            profileImageUrl: user.image
+              ? `http://localhost:3023/images/uploads/${user.image.path}`
+              : undefined,
           }));
           setUserDetails(users);
           await convertImagesToBase64(users);
         } else {
-          throw new Error(response.data.internalMessage || "Failed to fetch user details");
+          throw new Error(
+            response.data.internalMessage || 'Failed to fetch user details'
+          );
         }
       } catch (error) {
-        setError(error instanceof Error ? error.message : "An unknown error occurred");
-        message.error("Failed to fetch user details");
+        setError(
+          error instanceof Error ? error.message : 'An unknown error occurred'
+        );
+        message.error('Failed to fetch user details');
       } finally {
         setLoading(false);
       }
@@ -50,91 +56,145 @@ export const DownloadPage: React.FC = () => {
 
     const convertImagesToBase64 = async (users: UserDetails[]) => {
       const images: { [key: number]: string } = {};
-      await Promise.all(users.map(async (user, index) => {
-        if (user.profileImageUrl) {
-          try {
-            const response = await fetch(user.profileImageUrl);
-            if (!response.ok) throw new Error("Image fetch failed");
+      await Promise.all(
+        users.map(async (user, index) => {
+          if (user.profileImageUrl) {
+            try {
+              const response = await fetch(user.profileImageUrl);
+              if (!response.ok) throw new Error('Image fetch failed');
 
-            const blob = await response.blob();
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              images[index] = reader.result as string;
-              console.log(`Converted image for user at index ${index}:`, images[index]); // Debug log
-              setBase64Images(prev => ({ ...prev, ...images }));
-            };
-            reader.readAsDataURL(blob);
-          } catch (error) {
-            console.error(`Error converting image for user at index ${index}:`, error);
+              const blob = await response.blob();
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                images[index] = reader.result as string;
+                setBase64Images((prev) => ({ ...prev, ...images }));
+              };
+              reader.readAsDataURL(blob);
+            } catch (error) {
+              console.error(
+                `Error converting image for user at index ${index}:`,
+                error
+              );
+            }
           }
-        }
-      }));
+        })
+      );
     };
 
     fetchUserDetails();
   }, []);
 
   const handleDownload = async () => {
-    if (!userDetails.length) return;
-
-    const resumeContent = document.getElementById("resume-content");
+    const resumeContent = document.getElementById('resume-content');
 
     if (resumeContent) {
-      const buttons = document.querySelector(".button-container") as HTMLElement;
-      const templateSelector = document.querySelector(".template-selection") as HTMLElement;
+      const buttons = document.querySelector(
+        '.button-container'
+      ) as HTMLElement;
+      const templateSelector = document.querySelector(
+        '.template-selection'
+      ) as HTMLElement;
 
       if (buttons && templateSelector) {
-        buttons.style.display = "none";
-        templateSelector.style.display = "none";
+        buttons.style.display = 'none';
+        templateSelector.style.display = 'none';
       }
 
+      // Set styling for the content
       resumeContent.style.visibility = 'visible';
       resumeContent.style.position = 'relative';
-      resumeContent.style.width = '190mm'; 
-      resumeContent.style.height = 'auto'; 
-      resumeContent.style.overflow = 'visible';
+      resumeContent.style.width = '210mm'; // Adjusted width for content
+      resumeContent.style.height = '297mm';
+      resumeContent.style.overflow = 'auto';
+
+      const pdfOptions = {
+        margin: 5,
+        filename: 'resume.pdf',
+        html2canvas: { scale: 3 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+      };
 
       try {
-        const pdfOptions = {
-          margin: 10,
-          filename: 'resume.pdf',
-          html2canvas: { scale: 2 },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-        };
+        // Capture the content using html2canvas
+        const canvas = await html2canvas(resumeContent, pdfOptions.html2canvas);
+        const imgData = canvas.toDataURL('image/png');
+        const pageWidth = 210; // A4 page width in mm
+        const pageHeight = 297; // A4 page height in mm
+        const margin = pdfOptions.margin;
+        const imgWidth =
+          canvas.width * (pdfOptions.jsPDF.unit === 'mm' ? 25.4 / 96 : 1); // Convert canvas width to mm
+        const imgHeight =
+          canvas.height * (pdfOptions.jsPDF.unit === 'mm' ? 25.4 / 96 : 1); // Convert canvas height to mm
 
-        html2pdf().from(resumeContent).set(pdfOptions).save();
+        // Create a new jsPDF instance
+        const pdf = new jsPDF(
+          pdfOptions.jsPDF.orientation as 'p' | 'l',
+          pdfOptions.jsPDF.unit as 'mm',
+          pdfOptions.jsPDF.format as 'a4'
+        );
+
+        // Calculate scale factor to fit content within the A4 page
+        const scaleFactor = Math.min(
+          (pageWidth - margin * 2) / imgWidth,
+          (pageHeight - margin * 2) / imgHeight
+        );
+
+        // Adjust dimensions based on scale factor
+        const scaledImgWidth = imgWidth * scaleFactor;
+        const scaledImgHeight = imgHeight * scaleFactor;
+
+        let positionY = margin;
+
+        while (positionY < scaledImgHeight) {
+          // Add image to PDF
+          pdf.addImage(
+            imgData,
+            'PNG',
+            margin,
+            positionY,
+            scaledImgWidth,
+            Math.min(scaledImgHeight - positionY, pageHeight - margin * 2)
+          );
+          positionY += pageHeight - margin * 2; // Move to the next page
+
+          if (positionY < scaledImgHeight) {
+            pdf.addPage(); // Add a new page if there's more content
+          }
+        }
+
+        // Save the PDF with the provided filename
+        pdf.save(pdfOptions.filename);
         console.log('PDF saved successfully.');
       } catch (error) {
-        message.error("Failed to capture resume content");
         console.error('Error capturing resume content:', error);
+        alert('Failed to capture resume content');
       } finally {
         if (buttons && templateSelector) {
-          buttons.style.display = "block";
-          templateSelector.style.display = "block";
+          buttons.style.display = 'block';
+          templateSelector.style.display = 'block';
         }
       }
     }
   };
 
   const handleBack = () => {
-    navigate("/preview-resume");
+    navigate('/preview-resume');
   };
 
-  const renderTemplate = (templateNumber: number, user: UserDetails, index: number) => {
+  const renderTemplate = (
+    templateNumber: number,
+    user: UserDetails,
+    index: number
+  ) => {
     switch (templateNumber) {
       case 1:
-        return <Template1 userDetails={{ ...user, profileImageUrl: base64Images[index] }} />;
-      // case 2:
-      //   return <Template2 userDetails={{ ...user, profileImageUrl: base64Images[index] }} />;
-      // case 3:
-      //   return <Template3 userDetails={{ ...user, profileImageUrl: base64Images[index] }} />;
-      // case 4:
-      //   return <Template4 userDetails={{ ...user, profileImageUrl: base64Images[index] }} />;
-      // case 5:
-      //   return <Template5 userDetails={{ ...user, profileImageUrl: base64Images[index] }} />;
-      // case 6:
-      //   return <Template6 userDetails={{ ...user, profileImageUrl: base64Images[index] }} />;
+        return (
+          <Template1
+            userDetails={{ ...user, profileImageUrl: base64Images[index] }}
+          />
+        );
+      // Add other templates as needed
       default:
         return null;
     }
@@ -163,7 +223,11 @@ export const DownloadPage: React.FC = () => {
   return (
     <div className="download-page">
       <div className="button-container">
-        <Button type="primary" onClick={handleDownload} style={{ marginRight: 8 }}>
+        <Button
+          type="primary"
+          onClick={handleDownload}
+          style={{ marginRight: 8 }}
+        >
           Download PDF
         </Button>
         <Button type="default" onClick={handleBack}>
@@ -171,19 +235,15 @@ export const DownloadPage: React.FC = () => {
         </Button>
       </div>
       <div className="template-selection">
-        {[1, 2, 3, 4, 5, 6].map((templateNumber) => (
-          <Button
-            key={templateNumber}
-            type={selectedTemplate === templateNumber ? 'primary' : 'default'}
-            onClick={() => setSelectedTemplate(templateNumber)}
-          >
-            Template {templateNumber}
-          </Button>
-        ))}
+        <Button
+          type={selectedTemplate === 1 ? 'primary' : 'default'}
+          onClick={() => setSelectedTemplate(1)}
+        >
+          Template 1
+        </Button>
+        {/* Add other template buttons as needed */}
       </div>
-      <div id="resume-content">
-        {renderTemplates()}
-      </div>
+      <div id="resume-content">{renderTemplates()}</div>
     </div>
   );
 };
