@@ -130,6 +130,9 @@ export const Experience: React.FC = () => {
   return (
     <div className="formbold-main-wrapper">
       <div className="formbold-form-wrapper">
+        <Title level={3} style={{ marginBottom: '20px' }}>
+          Experience
+        </Title>
         {forms.length > 0 ? (
           forms.map((experience, index) => (
             <Form
@@ -140,9 +143,6 @@ export const Experience: React.FC = () => {
               onValuesChange={(changedValues) => handleFormChange(index, changedValues)}
               style={{ marginBottom: '16px' }}
             >
-              <Title level={4} style={{ marginTop: "20px" }}>
-                Experience
-              </Title>
               <Row gutter={16}>
                 <Col xs={24}>
                   <Form.Item label="Objective" name="objective">

@@ -65,21 +65,21 @@ export const AppLayout: React.FC = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Header className="header">
-        <Button
-          type="text"
-          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          onClick={() => setCollapsed(!collapsed)}
-          className="menu-trigger"
-        />
-        <div className="logo">Resume Generator</div>
-        <div className="header-right">
-          <Button type="primary" onClick={handleLogout}>Logout</Button>
-          {!screens.md && (
-            <Button type="primary" onClick={toggleDrawer} style={{ marginLeft: '1rem' }}>Menu</Button>
-          )}
-        </div>
-      </Header>
+     <Header className="main-header">
+  <Button
+    type="text"
+    icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+    onClick={() => setCollapsed(!collapsed)}
+    className="menu-trigger"
+  />
+  <div className="logo">Resume Generator</div>
+  <div className="header-right">
+    <Button type="primary" onClick={handleLogout}>Logout</Button>
+    {!screens.md && (
+      <Button type="primary" onClick={toggleDrawer} style={{ marginLeft: '1rem' }}>Menu</Button>
+    )}
+  </div>
+</Header>
       <Layout>
         {screens.md ? (
           <Sider trigger={null} collapsible collapsed={collapsed} className="site-layout-background">

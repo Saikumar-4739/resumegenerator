@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserDetails } from './types';
 import '../styles/downloadresume.css';
 import Template1 from '../template-layouts/template-1';
+import Template2 from '../template-layouts/template-2';
 import axios from 'axios';
 
 export const DownloadPage: React.FC = () => {
@@ -13,9 +14,7 @@ export const DownloadPage: React.FC = () => {
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string | null>(null);
   const [selectedTemplate, setSelectedTemplate] = React.useState<number>(1);
-  const [base64Images, setBase64Images] = React.useState<{
-    [key: number]: string;
-  }>({});
+  const [base64Images, setBase64Images] = React.useState<{ [key: number]: string }>({});
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -103,7 +102,7 @@ export const DownloadPage: React.FC = () => {
       // Set styling for the content
       resumeContent.style.visibility = 'visible';
       resumeContent.style.position = 'relative';
-      resumeContent.style.width = '210mm'; // Adjusted width for content
+      resumeContent.style.width = '210mm'; 
       resumeContent.style.height = '297mm';
       resumeContent.style.overflow = 'auto';
 
@@ -119,28 +118,28 @@ export const DownloadPage: React.FC = () => {
         // Capture the content using html2canvas
         const canvas = await html2canvas(resumeContent, pdfOptions.html2canvas);
         const imgData = canvas.toDataURL('image/png');
-        const pageWidth = 210; // A4 page width in mm
-        const pageHeight = 297; // A4 page height in mm
+        const pageWidth = 210; 
+        const pageHeight = 297; 
         const margin = pdfOptions.margin;
         const imgWidth =
-          canvas.width * (pdfOptions.jsPDF.unit === 'mm' ? 25.4 / 96 : 1); // Convert canvas width to mm
+          canvas.width * (pdfOptions.jsPDF.unit === 'mm' ? 25.4 / 96 : 1); 
         const imgHeight =
-          canvas.height * (pdfOptions.jsPDF.unit === 'mm' ? 25.4 / 96 : 1); // Convert canvas height to mm
+          canvas.height * (pdfOptions.jsPDF.unit === 'mm' ? 25.4 / 96 : 1); 
 
-        // Create a new jsPDF instance
+    
         const pdf = new jsPDF(
           pdfOptions.jsPDF.orientation as 'p' | 'l',
           pdfOptions.jsPDF.unit as 'mm',
           pdfOptions.jsPDF.format as 'a4'
         );
 
-        // Calculate scale factor to fit content within the A4 page
+        
         const scaleFactor = Math.min(
           (pageWidth - margin * 2) / imgWidth,
           (pageHeight - margin * 2) / imgHeight
         );
 
-        // Adjust dimensions based on scale factor
+      
         const scaledImgWidth = imgWidth * scaleFactor;
         const scaledImgHeight = imgHeight * scaleFactor;
 
@@ -156,14 +155,13 @@ export const DownloadPage: React.FC = () => {
             scaledImgWidth,
             Math.min(scaledImgHeight - positionY, pageHeight - margin * 2)
           );
-          positionY += pageHeight - margin * 2; // Move to the next page
+          positionY += pageHeight - margin * 2; 
 
           if (positionY < scaledImgHeight) {
-            pdf.addPage(); // Add a new page if there's more content
+            pdf.addPage(); 
           }
         }
 
-        // Save the PDF with the provided filename
         pdf.save(pdfOptions.filename);
         console.log('PDF saved successfully.');
       } catch (error) {
@@ -194,7 +192,12 @@ export const DownloadPage: React.FC = () => {
             userDetails={{ ...user, profileImageUrl: base64Images[index] }}
           />
         );
-      // Add other templates as needed
+      case 2:
+        return (
+          <Template2
+            userDetails={{ ...user, profileImageUrl: base64Images[index] }}
+          />
+        );
       default:
         return null;
     }
@@ -241,7 +244,12 @@ export const DownloadPage: React.FC = () => {
         >
           Template 1
         </Button>
-        {/* Add other template buttons as needed */}
+        <Button
+          type={selectedTemplate === 2 ? 'primary' : 'default'}
+          onClick={() => setSelectedTemplate(2)}
+        >
+          Template 2
+        </Button>
       </div>
       <div id="resume-content">{renderTemplates()}</div>
     </div>

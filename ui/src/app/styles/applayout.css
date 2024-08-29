@@ -1,108 +1,95 @@
-/* Import Cascadia Font */
-@font-face {
-  font-family: 'Cascadia Code', monospace;
-  src: local('Cascadia Code'), url('/assets/fonts/cascadia-code.woff2') format('woff2');
-}
+/* applayout.css */
 
-/* General Layout Styles */
-.site-layout-background {
-  background: #001529; /* Background color for Sider */
-}
-
-/* Header Styles */
-.header {
+.main-header {
+  background: #001529; /* Dark header background */
+  color: white; /* White text color */
+  padding: 0 16px;
   display: flex;
   align-items: center;
-  padding: 0 24px;
-  background: #001529; /* Header background color */
-  color: #fff; /* Header text color */
-  border-bottom: 1px solid #1890ff; /* Bottom border color */
-  font-family: 'Cascadia Code', monospace; /* Font for header */
+  justify-content: space-between;
 }
 
 .menu-trigger {
-  font-size: 16px;
-  width: 64px;
-  height: 64px;
-  background: #001529;
-  color: #fff;
-  border: none;
-  margin-right: 16px;
-}
-
-.menu-trigger:hover {
-  background: #1890ff;
+  color: white;
 }
 
 .logo {
-  flex: 1;
-  font-size: 1.5rem;
-  color: #fff;
+  font-size: 20px;
   font-weight: bold;
-  text-align: center;
+  color: #ffffff;
 }
 
 .header-right {
   display: flex;
-  align-items: center;
+  align-items: center; /* Align items vertically in the center */
 }
 
-/* Sider Styles */
+.header-right .ant-btn-primary {
+  margin-left: 16px; /* Add space between buttons */
+}
+
+.header-right .ant-btn-primary:first-child {
+  margin-left: 0; /* Remove margin from the first button if needed */
+}
+
+.ant-menu-dark {
+  background: #001529; /* Dark background for menu items */
+}
+
+.ant-menu-dark .ant-menu-item-selected {
+  background: #1890ff; /* Highlighted item background color */
+}
+
+.ant-drawer-body {
+  padding: 0; /* Remove padding in drawer */
+}
+
+.ant-drawer-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.ant-layout-footer {
+  background: #f0f2f5; /* Light background for footer */
+  text-align: center;
+  padding: 16px;
+}
+
+.ant-layout-content {
+  background: #ffffff; /* White background for content area */
+}
+
 .ant-layout-sider {
-  background: #001529; /* Background color for Sider */
-  color: #fff; /* Default text color in Sider */
-  font-family: 'Cascadia Code', monospace; /* Font for Sider */
+  background: #001529; /* Dark background for sider */
 }
 
-.ant-menu {
-  background: #001529; /* Background color for Menu in Sider */
-  border-right: 1px solid #1890ff; /* Border color for Menu */
-}
-
-.ant-menu-item,
-.ant-menu-submenu-title {
-  color: #fff !important; /* Default text color for Menu items and Submenu titles */
-  font-family: 'Cascadia Code', monospace; /* Font for Menu items and Submenu titles */
-}
-
-.ant-menu-item-active {
-  background: #050b11; /* Background color for active menu item */
-  color: #fff !important; /* Text color for active menu item */
+.ant-menu-item {
+  color: #ffffff; /* White text color for menu items */
 }
 
 .ant-menu-item:hover {
-  background: #020f1a; /* Background color for hover effect */
-  color: #fff !important; /* Ensure white text color for hover effect */
+  background: #1890ff; /* Hover background color */
 }
 
-/* Drawer Styles */
-.ant-drawer-body {
-  padding: 0; /* Remove default padding */
+.ant-menu-item a {
+  color: #ffffff; /* White text color for links */
 }
 
-.ant-drawer-header {
-  background: #001529; /* Drawer header background color */
-  color: #fff; /* Drawer header text color */
+.ant-menu-item a:hover {
+  color: #ffffff; /* White text color for links on hover */
 }
 
-.ant-drawer-close {
-  color: #fff; /* Close button color */
+.ant-btn-primary {
+  background-color: #1890ff; /* Primary button color */
+  border-color: #1890ff; /* Primary button border color */
 }
 
-/* Content Styles */
-.ant-layout-content {
-  background: #fff; /* Content background color */
-  padding: 24px;
-  margin: 0;
-  min-height: 280px;
-  font-family: 'Cascadia Code', monospace; /* Font for content */
+.ant-btn-primary:hover {
+  background-color: #40a9ff; /* Primary button hover color */
+  border-color: #40a9ff; /* Primary button border color on hover */
 }
 
-/* Footer Styles */
-.ant-layout-footer {
-  text-align: center;
-  background: #f0f2f5; /* Footer background color */
-  padding: 16px;
-  border-top: 1px solid #ddd; /* Footer border color */
-  font-family: 'Cascadia Code', monospace; /* Font for footer */
+.ant-btn-text {
+  color: white; /* Text color for text buttons */
 }
+  

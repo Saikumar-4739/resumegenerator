@@ -26,7 +26,7 @@
 
 #resume-content {
   width: 190mm; 
-  min-height: 297mm; /* A4 height */
+  min-height: 290mm; 
   overflow: hidden;
   position: relative;
 }

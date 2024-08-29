@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, Spin, Alert, Button, Upload, message } from 'antd';
-import 'antd/dist/reset.css';
-import { UploadOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import { RcFile } from 'antd/es/upload';
+import { RcFile } from 'antd/es/upload/interface';
+import { useNavigate } from 'react-router-dom';
+import "./styles/uploadimage.css"
 
 const BASE_URL = 'http://localhost:3023/images/uploads/';
 
 export const ImageUpload = () => {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-  useEffect(() => {
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
     const fetchImageUrl = async () => {
       setLoading(true);
       setError(null);
@@ -26,18 +29,18 @@ export const ImageUpload = () => {
 
       try {
         const response = await axios.get(`http://localhost:3023/images/user/${userId}`);
-        if (response.status === 200) {
-          const data = response.data;
-          if (data.length > 0 && data[0].path) {
-            setImageUrl(`${BASE_URL}${data[0].path}`);
+        if (response.status === 200 && response.data.length > 0) {
+          const { path } = response.data[0];
+          if (path) {
+            setImageUrl(`${BASE_URL}${path}`);
           } else {
             setError('Image URL not found in response');
           }
         } else {
           setError(`Failed to fetch image. Status: ${response.status}`);
         }
-      } catch (error) {
-        setError(`Error fetching image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      } catch (err) {
+        setError(`Error fetching image: ${err instanceof Error ? err.message : 'Unknown error'}`);
       } finally {
         setLoading(false);
       }
@@ -51,8 +54,9 @@ export const ImageUpload = () => {
 
     const userId = localStorage.getItem('userId');
     if (!userId) {
-      message.error('User ID not found');
-      onError(new Error('User ID not found'));
+      const errorMsg = 'User ID not found';
+      message.error(errorMsg);
+      onError(new Error(errorMsg));
       return;
     }
 
@@ -70,38 +74,45 @@ export const ImageUpload = () => {
             },
           });
 
-          if (response.status === 200) {
+          if (response.status === 200 || response.status === 201) {
             setImageUrl(`${BASE_URL}${response.data.path}`);
             message.success('Image uploaded successfully');
             onSuccess({}, file);
           } else {
-            throw new Error(`Failed to upload image. Status: ${response.status}`);
+            const errorMsg = `Failed to upload image. Status: ${response.status}`;
+            message.error(errorMsg);
+            onError(new Error(errorMsg));
           }
-        } catch (error) {
-          message.error(`Error uploading image: ${error instanceof Error ? error.message : 'Unknown error'}`);
-          onError(error);
+        } catch (err) {
+          const errorMsg = `Error uploading image: ${err instanceof Error ? err.message : 'Unknown error'}`;
+          message.error(errorMsg);
+          onError(err);
         }
       } else {
-        onError(new Error('Failed to read file as data URL'));
+        const errorMsg = 'Failed to read file as data URL';
+        message.error(errorMsg);
+        onError(new Error(errorMsg));
       }
     };
 
     reader.readAsDataURL(file as RcFile);
   };
 
+  const handlePrevious = () => {
+    navigate('/perosnal-details');
+  };
+
+  const handleNextSection = () => {
+    navigate('/preview-resume');
+  };
+
   return (
     <div style={{ padding: '20px' }}>
-      <h1>Upload Image</h1>
-      <Upload
-        customRequest={handleCustomRequest}
-        showUploadList={false}
-      >
-        <Button icon={<UploadOutlined />}>Click to Upload</Button>
-      </Upload>
+      <h1 className='name'>Upload Image</h1>
       <div style={{ marginTop: '20px', textAlign: 'center' }}>
         {loading && (
           <div style={{ position: 'relative', height: '300px' }}>
-            <Spin tip="Loading image..." spinning={loading} />
+            <Spin spinning={loading} />
           </div>
         )}
         {error && <Alert message={error} type="error" showIcon />}
@@ -114,18 +125,48 @@ export const ImageUpload = () => {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              overflow: 'hidden'
+              border: '2px solid black',
+              overflow: 'hidden',
+              backgroundColor: 'white',
             }}
-            cover={
-              <img
-                alt="Preview"
-                src={imageUrl}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            }
-          />
+          >
+            <img
+              alt="Preview"
+              src={imageUrl}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }}
+            />
+          </Card>
         )}
         {!imageUrl && !loading && !error && <p>No image uploaded yet</p>}
+      </div>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: '20px'
+      }}>
+        <Button
+          type="default"
+          onClick={handlePrevious}
+          icon={<LeftOutlined />}
+          style={{ marginRight: '8px' }}
+        />
+        <Upload
+          customRequest={handleCustomRequest}
+          showUploadList={false}
+        >
+          <Button icon={<UploadOutlined />}>Click to Upload</Button>
+        </Upload>
+        <Button
+          type="default"
+          onClick={handleNextSection}
+          icon={<RightOutlined />}
+          style={{ marginLeft: '8px' }}
+        />
       </div>
     </div>
   );

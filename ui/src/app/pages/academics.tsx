@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Row, Col, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { SaveOutlined, RightOutlined, LeftOutlined, PlusOutlined } from '@ant-design/icons';
+import { SaveOutlined, RightOutlined, LeftOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import "./styles/academics.css";
 
 interface Academics {
   institutionName: string;
@@ -15,56 +16,27 @@ interface Academics {
 const AddAcademicsForm: React.FC = () => {
   const [form] = Form.useForm();
   const [academicList, setAcademicList] = useState<Academics[]>([]);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isEditingExisting, setIsEditingExisting] = useState(false);
+  const [editIndex, setEditIndex] = useState(true);
   const navigate = useNavigate();
-  const userId = localStorage.getItem('userId');
+  const userId = localStorage.getItem('userId') ?? '';
 
-  useEffect(() => {
-    if (userId) {
-      fetchAcademicData(userId);
-    }
-  }, [userId]);
-
+  // Function to fetch academic data
   const fetchAcademicData = async (userId: string) => {
     try {
       const response = await axios.post(`http://localhost:3023/academics/${userId}`);
       const backendData: Academics[] = response.data.data;
       setAcademicList(backendData);
       form.setFieldsValue({ academicList: backendData });
-      setIsEditingExisting(backendData.length > 0); // Set editing state based on existing data
     } catch (error) {
       message.error(`Failed to fetch academic data. Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
-  const handleSave = async () => {
-    try {
-      const values = await form.validateFields();
-      const data = { userId, academicList: values.academicList || [] };
-
-      console.log('Submitting data:', data); // Debugging: Log data being sent
-
-      if (isEditingExisting) {
-        // Update existing data
-        const response = await axios.post(`http://localhost:3023/academics/update/${userId}`, data);
-        console.log('Update response:', response.data); // Debugging: Log response from the update request
-        message.success('Data updated successfully!');
-      } else {
-        // Create new data
-        const response = await axios.post('http://localhost:3023/academics/create', data);
-        console.log('Create response:', response.data); // Debugging: Log response from the create request
-        message.success('Data saved successfully!');
-        setIsEditingExisting(true); // Switch to editing mode after creating
-      }
-
-      fetchAcademicData(userId); // Re-fetch data to update the form
-      setIsEditing(false); // Exit edit mode
-    } catch (error) {
-      console.error('Save error:', error); // Debugging: Log any errors encountered
-      message.error(`Failed to save data. Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  useEffect(() => {
+    if (userId) {
+      fetchAcademicData(userId);
     }
-  };
+  }, [userId]);
 
   const handleFieldChange = (index: number, field: keyof Academics, value: any) => {
     const updatedList = [...academicList];
@@ -78,49 +50,110 @@ const AddAcademicsForm: React.FC = () => {
       ...prev,
       { institutionName: '', passingYear: 0, qualification: '', university: '', percentage: 0 },
     ]);
+    setEditIndex(false);
   };
 
-  const handleNextSection = () => navigate('/skills');
-  const handlePreviousSection = () => navigate('/experience');
+  const handleSaveButtonClick = async (index) => {
+    console.log("index number is = ", index);
+    try {
+      const values = await form.validateFields();
+      console.log(values);
+      const updatedItem = {...values.academicList[index],academicId: index+1};
+      console.log(updatedItem);
+      console.log('Updating data for index', index, ':', updatedItem);
 
-  const toggleEditMode = () => {
-    if (isEditing) {
-      handleSave(); // Save changes if currently in edit mode
-    } else {
-      setIsEditing(true); // Enter edit mode
+      const response = await axios.post(`http://localhost:3023/academics/update/${userId}`, { ...updatedItem, userId });
+      if (response.status === 200 || response.status === 201) {
+        message.success('Data updated successfully!');
+        setEditIndex(true);
+        fetchAcademicData(userId); // Ensure the latest data is displayed
+      } else {
+        message.error(`Failed to update data. Status: ${response.status}`);
+      }
+    } catch (error) {
+      message.error(`Failed to update data. Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
+  const handleEditButtonClick = () => {
+    setEditIndex(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditIndex(true);
+  };
+
+  const handlePreviousSection = () => {
+    navigate('/experience');
+  };
+
+  const handleNextSection = () => {
+    navigate('/skills');
+  };
+
   return (
-    <div>
-      <h2>Academics</h2>
+    <div className="academics-form">
+      <h2 className='name'>Academics</h2>
       <Form
         form={form}
         name="academics"
         layout="vertical"
-        initialValues={{ academicList }}
+        autoComplete="off"
       >
         {academicList.map((academic, index) => (
-          <Row gutter={[16, 16]} key={index}>
-            {['institutionName', 'passingYear', 'qualification', 'university', 'percentage'].map((field, i) => (
-              <Col xs={24} sm={12} key={i}>
-                <Form.Item
-                  label={field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
-                  name={['academicList', index, field]}
-                  rules={[{ required: true, message: `Please input your ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}!` }]}
+          <div key={index} style={{ marginBottom: '20px' }}>
+            <Row gutter={[16, 16]}>
+              {['institutionName', 'passingYear', 'qualification', 'university', 'percentage'].map((field, i) => (
+                <Col xs={24} sm={12} key={i}>
+                  <Form.Item
+                    label={field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+                    name={['academicList', index, field]}
+                    rules={[{ required: true, message: `Please input your ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}!` }]}
+                  >
+                    <Input
+                      type={field === 'passingYear' || field === 'percentage' ? 'number' : 'text'}
+                      value={academic[field]}
+                      onChange={e => handleFieldChange(index, field as keyof Academics, field === 'passingYear' || field === 'percentage' ? Number(e.target.value) : e.target.value)}
+                      disabled={editIndex}
+                      autoComplete="off"
+                    />
+                  </Form.Item>
+                </Col>
+              ))}
+            </Row>
+            <Form.Item style={{ textAlign: 'center' }}>
+              {!editIndex ? (
+                <>
+                  <Button
+                    type="primary"
+                    onClick={() => handleSaveButtonClick(index)}
+                    icon={<SaveOutlined />}
+                    style={{ marginRight: '10px' }}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    type="primary"
+                    onClick={handleCancelEdit}
+                    style={{ marginRight: '10px' }}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  type="primary"
+                  onClick={() => handleEditButtonClick()}
+                  icon={<EditOutlined />}
                 >
-                  <Input
-                    type={field === 'passingYear' || field === 'percentage' ? 'number' : 'text'}
-                    value={academic[field]}
-                    onChange={e => handleFieldChange(index, field as keyof Academics, field === 'passingYear' || field === 'percentage' ? Number(e.target.value) : e.target.value)}
-                    disabled={!isEditing} // Disable fields when not in editing mode
-                  />
-                </Form.Item>
-              </Col>
-            ))}
-          </Row>
+                  Edit
+                </Button>
+              )}
+            </Form.Item>
+          </div>
         ))}
-        <Form.Item style={{ textAlign: "center" }}>
+
+        <Form.Item style={{ textAlign: 'center', marginTop: '20px' }}>
           <Button
             type="default"
             onClick={handlePreviousSection}
@@ -128,14 +161,6 @@ const AddAcademicsForm: React.FC = () => {
             style={{ marginRight: '10px' }}
           >
             Previous
-          </Button>
-          <Button
-            type="primary"
-            onClick={toggleEditMode} // Toggle edit mode or save changes
-            icon={<SaveOutlined />}
-            style={{ marginRight: '10px' }}
-          >
-            {isEditing ? 'Save' : 'Edit'}
           </Button>
           <Button
             type="default"

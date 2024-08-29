@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+ import React, { useState, useEffect } from 'react';
 import { Form, Input, Select, Button, notification, Row, Col } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { LeftOutlined, SaveOutlined,EditOutlined, RightOutlined } from '@ant-design/icons';
+import { LeftOutlined, SaveOutlined, EditOutlined, RightOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import "./styles/personaldetails.css";
+
 
 const { Option } = Select;
 
@@ -18,7 +20,6 @@ export const PersonalDetailsForm: React.FC = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isSaved, setIsSaved] = useState(false);
   const [personalDetails, setPersonalDetails] = useState<PersonalDetails>({
     fatherName: '',
@@ -27,14 +28,12 @@ export const PersonalDetailsForm: React.FC = () => {
     maritalStatus: '',
     languagesKnown: '',
   });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [userId, setUserId] = useState<string | null>(localStorage.getItem('userId'));
 
   useEffect(() => {
     if (userId) {
       fetchPersonalDetails(userId);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchPersonalDetails = async (userId: string) => {
@@ -43,7 +42,7 @@ export const PersonalDetailsForm: React.FC = () => {
       const backendData: PersonalDetails = response.data.data[0];
       setPersonalDetails(backendData);
       form.setFieldsValue(backendData);
-      setIsEditing(false); // Set to false since we are not in edit mode initially
+      setIsEditing(false);
     } catch {
       notification.error({
         message: 'Error',
@@ -80,7 +79,7 @@ export const PersonalDetailsForm: React.FC = () => {
         });
       }
       setIsSaved(true);
-      setIsEditing(false); // Set to false after saving
+      setIsEditing(false);
     } catch {
       notification.error({
         message: 'Error',
@@ -94,7 +93,6 @@ export const PersonalDetailsForm: React.FC = () => {
     setIsEditing(true);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
@@ -104,11 +102,12 @@ export const PersonalDetailsForm: React.FC = () => {
   };
 
   const handleNextSection = () => {
-      navigate('/preview-resume');
+    navigate('/preview-resume');
   };
 
   return (
     <div style={{ padding: '20px' }}>
+      <h1 className="header">Personal Details</h1> {/* Header with class */}
       <Form
         form={form}
         name="personalDetails"

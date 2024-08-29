@@ -3,21 +3,23 @@ import { Form, Input, Button, Row, Col, Typography, message } from "antd";
 import { SaveOutlined, EditOutlined, RightOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./styles/userdetails.css"
+import "./styles/userdetails.css";
 
 const { Title } = Typography;
+
+interface Address {
+  street: string;
+  city: string;
+  state: string;
+  country: string;
+  zipcode: string;
+}
 
 interface UserDetails {
   uname: string;
   email: string;
   mobileNo: string;
-  address: {
-    street: string
-    city: string;
-    state: string;
-    country: string;
-    zipcode: string;
-  };
+  address: Address[];
 }
 
 const UserDetailsForm: React.FC = () => {
@@ -28,13 +30,13 @@ const UserDetailsForm: React.FC = () => {
     uname: '',
     email: '',
     mobileNo: '',
-    address: {
+    address: [{
       street: '',
       city: '',
       state: '',
       country: '',
       zipcode: '',
-    },
+    }],
   });
   const [userId] = useState<string | null>(localStorage.getItem('userId'));
 
@@ -42,14 +44,23 @@ const UserDetailsForm: React.FC = () => {
     if (userId) {
       fetchUserDetails(userId);
     }
-  }, []);
+  }, [userId]);
 
   const fetchUserDetails = async (userId: string) => {
     try {
       const response = await axios.post(`http://localhost:3023/users/${userId}`);
       const backendData: UserDetails = response.data.data[0];
+      
+      // Ensure address is an array
+      if (!Array.isArray(backendData.address)) {
+        backendData.address = [backendData.address];
+      }
+
       setUserDetails(backendData);
-      form.setFieldsValue(backendData);
+      form.setFieldsValue({
+        ...backendData,
+        address: backendData.address[0] || { street: '', city: '', state: '', country: '', zipcode: '' } // Ensure address is defined
+      });
       setIsEditing(false);
     } catch (error) {
       message.error('Failed to retrieve user details.');
@@ -67,7 +78,13 @@ const UserDetailsForm: React.FC = () => {
         ? `http://localhost:3023/users/updateuser/${userId}`
         : "http://localhost:3023/users/createuser";
 
-      await axios.post(endpoint, userDetails);
+      // Ensure address is an array
+      const updatedDetails = {
+        ...userDetails,
+        address: Array.isArray(userDetails.address) ? userDetails.address : [userDetails.address]
+      };
+
+      await axios.post(endpoint, updatedDetails);
       message.success(`User details have been ${isEditing ? 'updated' : 'saved'} successfully.`);
       setIsEditing(false);
     } catch (error) {
@@ -82,6 +99,8 @@ const UserDetailsForm: React.FC = () => {
   const handleNextSection = () => {
     navigate("/experience");
   };
+
+  const address = userDetails.address[0] || { street: '', city: '', state: '', country: '', zipcode: '' };
 
   return (
     <div className="form-container">
@@ -150,10 +169,13 @@ const UserDetailsForm: React.FC = () => {
                 rules={[{ required: true, message: "Please input your street!" }]}
               >
                 <Input
-                  value={userDetails.address.street}
+                  value={address.street}
                   onChange={(e) => setUserDetails({
                     ...userDetails,
-                    address: { ...userDetails.address, street: e.target.value }
+                    address: [{
+                      ...address,
+                      street: e.target.value
+                    }]
                   })}
                   disabled={!isEditing}
                 />
@@ -166,10 +188,13 @@ const UserDetailsForm: React.FC = () => {
                 rules={[{ required: true, message: "Please input your city!" }]}
               >
                 <Input
-                  value={userDetails.address.city}
+                  value={address.city}
                   onChange={(e) => setUserDetails({
                     ...userDetails,
-                    address: { ...userDetails.address, city: e.target.value }
+                    address: [{
+                      ...address,
+                      city: e.target.value
+                    }]
                   })}
                   disabled={!isEditing}
                 />
@@ -182,10 +207,13 @@ const UserDetailsForm: React.FC = () => {
                 rules={[{ required: true, message: "Please input your state!" }]}
               >
                 <Input
-                  value={userDetails.address.state}
+                  value={address.state}
                   onChange={(e) => setUserDetails({
                     ...userDetails,
-                    address: { ...userDetails.address, state: e.target.value }
+                    address: [{
+                      ...address,
+                      state: e.target.value
+                    }]
                   })}
                   disabled={!isEditing}
                 />
@@ -198,10 +226,13 @@ const UserDetailsForm: React.FC = () => {
                 rules={[{ required: true, message: "Please input your country!" }]}
               >
                 <Input
-                  value={userDetails.address.country}
+                  value={address.country}
                   onChange={(e) => setUserDetails({
                     ...userDetails,
-                    address: { ...userDetails.address, country: e.target.value }
+                    address: [{
+                      ...address,
+                      country: e.target.value
+                    }]
                   })}
                   disabled={!isEditing}
                 />
@@ -214,10 +245,13 @@ const UserDetailsForm: React.FC = () => {
                 rules={[{ required: true, message: "Please input your zip code!" }]}
               >
                 <Input
-                  value={userDetails.address.zipcode}
+                  value={address.zipcode}
                   onChange={(e) => setUserDetails({
                     ...userDetails,
-                    address: { ...userDetails.address, zipcode: e.target.value }
+                    address: [{
+                      ...address,
+                      zipcode: e.target.value
+                    }]
                   })}
                   disabled={!isEditing}
                 />
@@ -249,7 +283,6 @@ const UserDetailsForm: React.FC = () => {
                   onClick={handleNextSection}
                   style={{ marginLeft: "10px" }}
                 >
-                  Next
                 </Button>
               </>
             )}
