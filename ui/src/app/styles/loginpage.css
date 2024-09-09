@@ -1,15 +1,97 @@
-/* loginpage.css */
+/* Full-page container to center content */
+.page-container {
+  display: flex;
+  justify-content: center; /* Horizontally center */
+  align-items: center;     /* Vertically center */
+  height: 100vh;           /* Full viewport height */
+  margin: 0;
+  background-color: #f0f0f0; /* Optional background color for the page */
+}
+
+/* Apply custom font to the heading */
+.heading {
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 3em; /* Adjust font size as needed */
+  font-weight: 700; /* Bold font weight */
+  color: #333; /* Dark grey color for text */
+  text-align: center; /* Center-align the text */
+  margin-bottom: 1em; /* Margin below the heading */
+  letter-spacing: 1px; /* Add space between letters */
+}
+
+
+/* Login container styling */
 .login-container {
-    max-width: 400px;
-    margin: auto;
-    padding: 2rem;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .login-form-button {
-    width: 100%;
-    margin-top: 10px;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 400px; /* Adjust width as needed */
+  padding: 2em;
+  border-radius: 15px;
+  background-color: #fff; /* Background color of the container */
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box; /* Include padding in the width and height calculations */
+}
+
+
+/* Form container */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Input field styles */
+.input-field {
+  background: #fff; /* White background for input fields */
+  border: 1px solid #d3d3d3;
+  border-radius: 5px;
+  color: #333;
+  padding: 0.5em;
+  width: 100%;
+}
+
+/* Button styles */
+.button1 {
+  padding: 0.5em 1.1em;
+  border-radius: 5px;
+  border: none;
+  background-color: #007bff; /* Blue color for buttons */
+  color: white;
+  margin-right: 0.5em;
+  transition: 0.4s ease-in-out;
+}
+
+.button1:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.button2 {
+  padding: 0.5em 2.3em;
+  border-radius: 5px;
+  border: none;
+  background-color: #28a745; /* Green color for buttons */
+  color: white;
+  transition: 0.4s ease-in-out;
+}
+
+.button2:hover {
+  background-color: #218838; /* Darker green on hover */
+}
+
+.button3 {
+  margin-top: 1em;
+  padding: 0.5em;
+  border-radius: 5px;
+  border: none;
+  background-color: #dc3545; /* Red color for "Forgot Password" button */
+  color: white;
+  transition: 0.4s ease-in-out;
+}
+
+.button3:hover {
+  background-color: #c82333; /* Darker red on hover */
+}

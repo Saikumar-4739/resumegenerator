@@ -1,95 +1,55 @@
 /* applayout.css */
 
-.main-header {
-  background: #001529; /* Dark header background */
-  color: white; /* White text color */
+/* Ensure there's no margin or padding on the body */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure the header has no margin or padding */
+.header {
+  background: #001529; /* Dark background */
   padding: 0 16px;
+  margin-bottom: 0; /* Remove any bottom margin */
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
 }
 
-.menu-trigger {
-  color: white;
+/* Remove any margin from the layout container */
+.ant-layout {
+  margin: 0;
+  padding: 0;
 }
 
-.logo {
-  font-size: 20px;
-  font-weight: bold;
-  color: #ffffff;
+/* Ensure the sider has no margin or padding */
+.ant-layout-sider {
+  background: #001529; /* Dark background */
+  padding: 0; /* Remove padding */
 }
 
-.header-right {
-  display: flex;
-  align-items: center; /* Align items vertically in the center */
-}
-
-.header-right .ant-btn-primary {
-  margin-left: 16px; /* Add space between buttons */
-}
-
-.header-right .ant-btn-primary:first-child {
-  margin-left: 0; /* Remove margin from the first button if needed */
-}
-
-.ant-menu-dark {
-  background: #001529; /* Dark background for menu items */
-}
-
-.ant-menu-dark .ant-menu-item-selected {
-  background: #1890ff; /* Highlighted item background color */
-}
-
-.ant-drawer-body {
-  padding: 0; /* Remove padding in drawer */
-}
-
-.ant-drawer-title {
-  font-size: 18px;
-  font-weight: bold;
+/* Ensure the content area and footer are aligned with the header */
+.ant-layout-content {
+  background: #ffffff;
+  padding: 24px; /* Adjust padding if needed */
 }
 
 .ant-layout-footer {
-  background: #f0f2f5; /* Light background for footer */
+  background: #f0f2f5;
   text-align: center;
   padding: 16px;
+  margin: 0; /* Remove any margin */
 }
 
-.ant-layout-content {
-  background: #ffffff; /* White background for content area */
+.logo{
+  color: #ffffff;
+  font-size: larger;
 }
 
-.ant-layout-sider {
-  background: #001529; /* Dark background for sider */
+.menu-trigger{
+  color: #ffffff;
 }
 
-.ant-menu-item {
-  color: #ffffff; /* White text color for menu items */
+.logout-button{
+  color: #ffffff;
 }
-
-.ant-menu-item:hover {
-  background: #1890ff; /* Hover background color */
-}
-
-.ant-menu-item a {
-  color: #ffffff; /* White text color for links */
-}
-
-.ant-menu-item a:hover {
-  color: #ffffff; /* White text color for links on hover */
-}
-
-.ant-btn-primary {
-  background-color: #1890ff; /* Primary button color */
-  border-color: #1890ff; /* Primary button border color */
-}
-
-.ant-btn-primary:hover {
-  background-color: #40a9ff; /* Primary button hover color */
-  border-color: #40a9ff; /* Primary button border color on hover */
-}
-
-.ant-btn-text {
-  color: white; /* Text color for text buttons */
-}
-  

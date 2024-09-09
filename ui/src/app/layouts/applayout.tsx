@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Layout, Menu, Button, Drawer, Grid } from 'antd';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -10,7 +10,8 @@ import {
   EyeOutlined,
   DownloadOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined
+  MenuUnfoldOutlined,
+  LogoutOutlined,
 } from '@ant-design/icons';
 import "../styles/applayout.css";
 
@@ -27,18 +28,6 @@ export const AppLayout: React.FC = () => {
 
   const currentRoute = location.pathname;
 
-  useEffect(() => {
-    const isLoggedIn = !!localStorage.getItem('token');
-
-    if (!isLoggedIn && currentRoute !== '/login') {
-      navigate('/login');
-    }
-
-    if (isLoggedIn && currentRoute === '/login') {
-      navigate('/user-form');
-    }
-  }, [currentRoute, navigate]);
-
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
@@ -49,41 +38,56 @@ export const AppLayout: React.FC = () => {
   };
 
   const menuItems = [
-    { key: "/user-form", icon: <UserOutlined />, label: <Link to="/user-form">User Form</Link> },
-    { key: "/experience", icon: <AppstoreAddOutlined />, label: <Link to="/experience">Experience</Link> },
-    { key: "/academics", icon: <BookOutlined />, label: <Link to="/academics">Academics</Link> },
-    { key: "/skills", icon: <SmileOutlined />, label: <Link to="/skills">Skills</Link> },
-    { key: "/personal-details", icon: <FileDoneOutlined />, label: <Link to="/personal-details">Personal Details</Link> },
-    { key: "/image", icon: <FileDoneOutlined />, label: <Link to="/image">Image</Link> },
-    { key: "/preview-resume", icon: <EyeOutlined />, label: <Link to="/preview-resume">Preview Resume</Link> },
-    { key: "/download-page", icon: <DownloadOutlined />, label: <Link to="/download-page">Download Resume</Link> },
+    { key: "/user-form", icon: <UserOutlined />, label: "User Form" },
+    { key: "/experience", icon: <AppstoreAddOutlined />, label: "Experience" },
+    { key: "/academics", icon: <BookOutlined />, label: "Academics" },
+    { key: "/skills", icon: <SmileOutlined />, label: "Skills" },
+    { key: "/personal-details", icon: <FileDoneOutlined />, label: "Personal Details" },
+    { key: "/image", icon: <FileDoneOutlined />, label: "Image" },
+    { key: "/preview-resume", icon: <EyeOutlined />, label: "Preview Resume" },
+    { key: "/download-page", icon: <DownloadOutlined />, label: "Download" },
   ];
 
-  if (currentRoute === '/login') {
+  if (location.pathname === '/login') {
     return <Outlet />;
   }
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-     <Header className="main-header">
-  <Button
-    type="text"
-    icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-    onClick={() => setCollapsed(!collapsed)}
-    className="menu-trigger"
-  />
-  <div className="logo">Resume Generator</div>
-  <div className="header-right">
-    <Button type="primary" onClick={handleLogout}>Logout</Button>
-    {!screens.md && (
-      <Button type="primary" onClick={toggleDrawer} style={{ marginLeft: '1rem' }}>Menu</Button>
-    )}
-  </div>
-</Header>
-      <Layout>
+      <Header className="header">
+        <Button
+          type="text"
+          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          onClick={() => setCollapsed(!collapsed)}
+          className="menu-trigger"
+        />
+        <div className="logo">Résumé Generator</div>
+        <div className="header-right">
+          <Button 
+            type="text" 
+            icon={<LogoutOutlined />} 
+            onClick={handleLogout} 
+            className="logout-button"
+            aria-label="Logout"
+          />
+          {!screens.md && (
+            <Button type="primary" onClick={toggleDrawer} style={{ marginLeft: '1rem' }}>Menu</Button>
+          )}
+        </div>
+      </Header>
+      <Layout style={{ margin: 0 }}>
         {screens.md ? (
           <Sider trigger={null} collapsible collapsed={collapsed} className="site-layout-background">
-            <Menu theme="dark" mode="inline" selectedKeys={[currentRoute]} items={menuItems} />
+            <Menu theme="dark" mode="inline" selectedKeys={[currentRoute]}>
+              {menuItems.map(item => (
+                <Menu.Item key={item.key} icon={item.icon}>
+                  <Link to={item.key}>{item.label}</Link>
+                </Menu.Item>
+              ))}
+              <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
+                Logout
+              </Menu.Item>
+            </Menu>
           </Sider>
         ) : (
           <Drawer
@@ -92,12 +96,18 @@ export const AppLayout: React.FC = () => {
             closable
             onClose={toggleDrawer}
             open={drawerOpen}
-            styles={{ body: { padding: 0 } }}
+            bodyStyle={{ padding: 0 }}
           >
-            <Menu theme="dark" mode="inline" selectedKeys={[currentRoute]} items={menuItems} />
+            <Menu theme="dark" mode="inline" selectedKeys={[currentRoute]}>
+              {menuItems.map(item => (
+                <Menu.Item key={item.key} icon={item.icon}>
+                  <Link to={item.key}>{item.label}</Link>
+                </Menu.Item>
+              ))}
+            </Menu>
           </Drawer>
         )}
-        <Layout style={{ padding: '0 24px', minHeight: '280px' }}>
+        <Layout style={{ padding: '0 24px', marginTop: '0' }}>
           <Content
             style={{
               padding: 24,
@@ -109,7 +119,7 @@ export const AppLayout: React.FC = () => {
             <Outlet />
           </Content>
           <Footer style={{ textAlign: 'center', padding: '16px' }}>
-            ©2024 Resume Generator. All rights reserved.
+            ©2024 Résumé Generator. All rights reserved.
           </Footer>
         </Layout>
       </Layout>

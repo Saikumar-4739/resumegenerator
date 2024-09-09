@@ -9,8 +9,7 @@ import { ExperienceModule } from './experience/experience.module';
 import { SkillModule } from './skills/skills.module';
 import { PersonalDetailsModule } from './personal-details/personal-details.module';
 import { ImageModule } from './image/image.module';
-
-
+import { LoginModule } from './loginpage/login.module';
 
 
 
@@ -34,6 +33,7 @@ import { ImageModule } from './image/image.module';
     SkillModule,
     PersonalDetailsModule,
     ImageModule,
+    LoginModule,
   ],
   controllers: [AppController],
   providers: [AppService],
