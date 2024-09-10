@@ -4,7 +4,7 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 import session from 'express-session';
 import * as passport from 'passport';
 import cookieParser from 'cookie-parser'; 
-import * as redis from 'redis';
+import redis from 'redis';
 import { strict } from 'assert';
 // import { MemoryStore } from 'express-session';
 // const MemoryStore = require('memorystore')(session);
@@ -46,14 +46,11 @@ async function bootstrap() {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // Only use secure cookies in production
         // maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        maxAge: 30 * 1000,
+        maxAge: 24* 60 * 60 * 1000,
         sameSite: 'lax', // 'lax' is often a good default, but you can change it based on your needs  
       }
     })
   );
-
-  
-  
 
   await app.listen(3023);
 }

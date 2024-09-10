@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Typography, Modal } from 'antd';
 import axios from 'axios';
-import "../styles/loginpage.css"; 
+import '../styles/loginpage.css';
 import { useAuth } from './authentication';
 
 const { Title } = Typography;
 
-const API_BASE_URL = 'http://localhost:3023/login'; // Adjust base URL if necessary
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3023/login';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -24,23 +24,32 @@ const LoginPage: React.FC = () => {
   const handleLogin = async (values: any) => {
     setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/check`, values); // Adjust endpoint if necessary
-      const { response: apiResponse, user } = response.data;
+      const response = await axios.post(`${API_BASE_URL}/check`, values, { withCredentials: true });
+      const { status, internalMessage, data } = response.data;
 
-      if (apiResponse.status) {
-        localStorage.setItem('user', user.username);
-        localStorage.setItem('userId', user.id.toString());
-        localStorage.setItem('token', user.email);
+      console.log('API Response:', response.data);
 
-        login(); // Update authentication state
-        navigate('/user-form'); // Redirect to user-form after login
+      if (status) {
+        const user = data[0]; // Assuming data is an array and user info is at index 0
+
+        // Save user details in state
+        login(user); // Update authentication state with user details
+
+        navigate('/user-form'); // Redirect after login
       } else {
-        setModalMessage(apiResponse.internalMessage || 'Login failed');
+        setModalMessage(internalMessage || 'Login failed');
         setIsModalVisible(true);
       }
     } catch (error) {
       console.error('Login error:', error);
-      setModalMessage(error.response?.data?.response?.internalMessage || 'Invalid username or password');
+
+      if (error.response) {
+        console.error('Error Response:', error.response.data);
+        setModalMessage(error.response.data.response?.internalMessage || 'Login failed. Please try again.');
+      } else {
+        setModalMessage('Login failed. Please try again.');
+      }
+      
       setIsModalVisible(true);
     } finally {
       setLoading(false);
@@ -50,8 +59,8 @@ const LoginPage: React.FC = () => {
   const handleSignup = async (values: any) => {
     setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/post`, values); // Adjust endpoint if necessary
-      const { status, errorCode, internalMessage } = response.data;
+      const response = await axios.post(`${API_BASE_URL}/post`, values); // Updated endpoint for signup
+      const { status, internalMessage } = response.data;
 
       if (status) {
         Modal.success({
@@ -68,7 +77,14 @@ const LoginPage: React.FC = () => {
       }
     } catch (error) {
       console.error('Signup error:', error);
-      setModalMessage(error.response?.data?.response?.internalMessage || 'Registration failed. Please try again.');
+
+      if (error.response) {
+        console.error('Error Response:', error.response.data);
+        setModalMessage(error.response.data.response?.internalMessage || 'Registration failed. Please try again.');
+      } else {
+        setModalMessage('Registration failed. Please try again.');
+      }
+      
       setIsModalVisible(true);
     } finally {
       setLoading(false);
@@ -82,7 +98,7 @@ const LoginPage: React.FC = () => {
           {isSignup ? 'User Signup' : 'User Login'}
         </Title>
         <Form
-          name={isSignup ? "signup" : "login"}
+          name={isSignup ? 'signup' : 'login'}
           className="form"
           initialValues={{ remember: true }}
           onFinish={isSignup ? handleSignup : handleLogin}
@@ -99,7 +115,7 @@ const LoginPage: React.FC = () => {
             name="username"
             rules={[{ required: true, message: 'Please input your Username!' }]}
           >
-            <Input className="input-field" placeholder="Username" />
+            <Input className="input-field" placeholder={isSignup ? 'Username' : 'Email'} />
           </Form.Item>
           <Form.Item
             name="password"

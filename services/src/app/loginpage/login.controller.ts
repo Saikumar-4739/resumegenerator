@@ -11,28 +11,22 @@ const sessionStore = new MemoryStore({
   checkPeriod: 86400000 // Prune expired entries every 24h
 });
 
-  const ids:string[]=[];
-
-  const cookiesids:string[]=[];
-
 @Controller('login')
 export class LoginController {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private sessionStore: any;
+  private ids: string[] = [];
+  private cookiesids: string[] = [];
 
-  constructor(private readonly loginService: LoginService) {
-  }
+  constructor(private readonly loginService: LoginService) {}
 
   @Post('check')
   async login(
     @Body() details: LoginDetails,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @Session() session: Record<string, any> | undefined,
     @Req() req: Request
   ): Promise<{ response: LoginResponse }> {
     try {
       if (!session) {
-
-
         throw new Error('Session is not initialized');
       }
   
@@ -41,13 +35,21 @@ export class LoginController {
       if (response.status) {
         session.user = user;
         console.log('User set in session:', session.user);
-        
-        // Further logic here
+        console.log("session-id",session.id);
+
+        // Add session ID and cookie ID to arrays
+        const cookieId = req.cookies['cookie_id'];
+        if (cookieId) {
+          this.cookiesids.push(cookieId);
+          console.log('cookie_id:', cookieId);
+        }
+        if (session.id) {
+          this.ids.push(session.id);
+        }
       }
   
       return { response };
     } catch (error) {
-      // Log the error in detail
       console.error('Login error:', error.message);
       if (error.stack) {
         console.error('Stack trace:', error.stack);
@@ -63,16 +65,13 @@ export class LoginController {
       };
     }
   }
-  
-  
-
 
   @Post('post')
   async createUser(@Body() details: LoginDetails): Promise<LoginResponse> {
     try {
       return await this.loginService.createUser(details);
     } catch (err) {
-      console.error(err);
+      console.error('Create user error:', err.message);
       return {
         status: false,
         errorCode: 500,
@@ -82,7 +81,6 @@ export class LoginController {
     }
   }
 
-  
   @Get('verify')
   async verifySession(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -91,78 +89,77 @@ export class LoginController {
     @Res() res: Response
   ) {
     try {
-      // console.log("requestttttttttttttttttttt",req)
-      // console.log(req.rawHeaders);
-      // Access the cookie ID from the request cookies
       const cookieId = req.cookies['cookie_id'];
-      console.log('Cookie ID:', cookieId);
-      cookiesids.push(cookieId+"fromverify");
-      console.log("cookies from ront end ",req.cookies);
+      if (cookieId) {
+        console.log('Received cookie ID:', cookieId);
+      }
 
-      // Logging session details for debugging
       console.log('Session:', session);
       console.log('Session ID:', session.id);
-      ids.push(session.id+"from verify");
-      console.log('Inside the controller...');
-      this.getAllSessionIds();
-      //  Verify the session using your login service
+
       const isValid = await this.loginService.verifySession(session);
-      // const isValid=check(ids,session.id);
-      console.log(isValid+"from checkkkkkkkkkkkkkkkkkkkk");
-      console.log(session); // Debug session content
+      console.log('Session valid:', isValid);
 
       return res.status(200).json({ isValid });
     } catch (error) {
-      console.error('Verification error:', error);
+      console.error('Verification error:', error.message);
       return res.status(500).json({ isValid: false });
     }
   }
 
-
   @Post('logout')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  logout(@Session() session: Record<string, any>, @Res() res: Response) {
-    session.destroy((err) => {
-      if (err) {
-        return res.status(500).json({ message: 'Logout failed' });
-      }
-      res.clearCookie('cookie_id'); // clear cookie if needed
-      console.log(res.clearCookie('cookie_id'));
-      return res.status(200).json({ message: 'Logged out successfully' });
-    });
+  async logout(@Session() session: Record<string, any>, @Req() req: Request, @Res() res: Response) {
+    try {
+      const sessionId = session.id;
+      const cookieId = req.cookies['cookie_id'];
+
+      session.destroy((err) => {
+        if (err) {
+          console.error('Logout error:', err.message);
+          return res.status(500).json({ message: 'Logout failed' });
+        }
+        if (cookieId) {
+          const index = this.cookiesids.indexOf(cookieId);
+          if (index !== -1) {
+            this.cookiesids.splice(index, 1);
+          }
+          res.clearCookie('cookie_id'); // clear cookie if needed
+          console.log('Cookie cleared');
+        }
+        if (sessionId) {
+          const index = this.ids.indexOf(sessionId);
+          if (index !== -1) {
+            this.ids.splice(index, 1);
+          }
+        }
+        return res.status(200).json({ message: 'Logged out successfully' });
+      });
+    } catch (error) {
+      console.error('Logout error:', error.message);
+      return res.status(500).json({ message: 'Logout failed' });
+    }
   }
 
-
+  @Get('sessionIds')
   getAllSessionIds(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       sessionStore.all((err: any, sessions: { [key: string]: any }) => {
         if (err) {
-          console.error(err);
+          console.error('Session store error:', err.message);
           reject(err);
         } else {
           const sessionIds = Object.keys(sessions);
           console.log('Session IDs:', sessionIds);
-          console.log("session ids array......",ids);
-          console.log("cookie ids ",cookiesids);
-
           resolve(sessionIds);
         }
       });
     });
   }
-}
 
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function check(cookiesids: string[], cookieId: string): boolean {
-  console.log("inside the checkkkkkkkkkkkkkkk");
-  console.log(cookieId+"cookieeeeeeeeeeeeeeeeeeeeeeee id");
-  for (const id of cookiesids) {
-    if (id === cookieId) {
-      console.log("yes");
-      return true;
-    }
+  @Get('cookieIds')
+  getAllCookieIds(): string[] {
+    return this.cookiesids;
   }
-  return false;
 }
