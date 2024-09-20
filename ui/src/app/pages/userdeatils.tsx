@@ -4,6 +4,7 @@ import { SaveOutlined, EditOutlined, RightOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./styles/userdetails.css";
+import Cookies from 'js-cookie';
 
 const { Title } = Typography;
 
@@ -26,18 +27,12 @@ const UserDetailsForm: React.FC = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [isVisible, setIsVisible] = useState<boolean>(false); // State to control form visibility
+  const [isVisible, setIsVisible] = useState<boolean>(false);
   const [userDetails, setUserDetails] = useState<UserDetails>({
     uname: '',
     email: '',
     mobileNo: '',
-    address: [{
-      street: '',
-      city: '',
-      state: '',
-      country: '',
-      zipcode: '',
-    }],
+    address: [{} as Address],
   });
   const [userId] = useState<string | null>(localStorage.getItem('userId'));
 
@@ -45,16 +40,21 @@ const UserDetailsForm: React.FC = () => {
     if (userId) {
       fetchUserDetails(userId);
     } else {
-      // Initialize form for new user if no userId is present
       setIsVisible(true);
     }
   }, [userId]);
 
   const fetchUserDetails = async (userId: string) => {
     try {
-      const response = await axios.post(`http://localhost:3023/users/${userId}`);
+      const response = await axios.get(`http://localhost:3023/users/${userId}`, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'cookie_id': Cookies.get('cookie_id'),
+        }
+      });
       const backendData: UserDetails = response.data.data[0];
-
+      
       // Ensure address is an array
       if (!Array.isArray(backendData.address)) {
         backendData.address = [backendData.address];
@@ -63,26 +63,20 @@ const UserDetailsForm: React.FC = () => {
       setUserDetails(backendData);
       form.setFieldsValue({
         ...backendData,
-        address: backendData.address[0] || { street: '', city: '', state: '', country: '', zipcode: '' }
+        address: backendData.address
       });
       setIsEditing(false);
-      setIsVisible(true); // Show the form when data is fetched successfully
+      setIsVisible(true);
     } catch (error) {
       message.error('Failed to retrieve user details. Initializing new user form.');
       setUserDetails({
         uname: '',
         email: '',
         mobileNo: '',
-        address: [{
-          street: '',
-          city: '',
-          state: '',
-          country: '',
-          zipcode: '',
-        }],
+        address: [{} as Address],
       });
-      form.resetFields(); // Reset form fields
-      setIsVisible(true); // Show the form on error as new user
+      form.resetFields();
+      setIsVisible(true);
     }
   };
 
@@ -92,17 +86,17 @@ const UserDetailsForm: React.FC = () => {
         ? `http://localhost:3023/users/updateuser/${userId}`
         : "http://localhost:3023/users/createuser";
 
-      // Ensure address is an array
-      const updatedDetails = {
-        ...userDetails,
-        address: Array.isArray(userDetails.address) ? userDetails.address : [userDetails.address]
-      };
-
-      await axios.post(endpoint, updatedDetails);
+      await axios.post(endpoint, userDetails, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'cookie_id': Cookies.get('cookie_id'),
+        }
+      });
       message.success(`User details have been ${isEditing ? 'updated' : 'saved'} successfully.`);
       setIsEditing(false);
       if (!userId) {
-        navigate("/some-next-route"); // Redirect to another route if needed
+        navigate("/some-next-route");
       }
     } catch (error) {
       message.error('Failed to save data. Please try again.');
@@ -117,12 +111,17 @@ const UserDetailsForm: React.FC = () => {
     navigate("/experience");
   };
 
-  const address = userDetails.address[0] || { street: '', city: '', state: '', country: '', zipcode: '' };
+  const removeAddress = (index: number) => {
+    setUserDetails(prevDetails => ({
+      ...prevDetails,
+      address: prevDetails.address.filter((_, i) => i !== index)
+    }));
+  };
 
   return (
     <div className="form-container">
       <div className="form-inner-container">
-        {isVisible && ( // Render form only when isVisible is true
+        {isVisible && (
           <Form
             form={form}
             layout="vertical"
@@ -177,98 +176,104 @@ const UserDetailsForm: React.FC = () => {
             <Title level={4} style={{ marginTop: "20px" }}>
               Address Information
             </Title>
-            <Row gutter={[16, 16]}>
-              <Col xs={24} sm={12}>
-                <Form.Item
-                  label="Street"
-                  name={["address", "street"]}
-                  rules={[{ required: true, message: "Please input your street!" }]}
-                >
-                  <Input
-                    value={address.street}
-                    onChange={(e) => setUserDetails({
-                      ...userDetails,
-                      address: [{
-                        ...address,
-                        street: e.target.value
-                      }]
-                    })}
-                  />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12}>
-                <Form.Item
-                  label="City"
-                  name={["address", "city"]}
-                  rules={[{ required: true, message: "Please input your city!" }]}
-                >
-                  <Input
-                    value={address.city}
-                    onChange={(e) => setUserDetails({
-                      ...userDetails,
-                      address: [{
-                        ...address,
-                        city: e.target.value
-                      }]
-                    })}
-                  />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12}>
-                <Form.Item
-                  label="State"
-                  name={["address", "state"]}
-                  rules={[{ required: true, message: "Please input your state!" }]}
-                >
-                  <Input
-                    value={address.state}
-                    onChange={(e) => setUserDetails({
-                      ...userDetails,
-                      address: [{
-                        ...address,
-                        state: e.target.value
-                      }]
-                    })}
-                  />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12}>
-                <Form.Item
-                  label="Country"
-                  name={["address", "country"]}
-                  rules={[{ required: true, message: "Please input your country!" }]}
-                >
-                  <Input
-                    value={address.country}
-                    onChange={(e) => setUserDetails({
-                      ...userDetails,
-                      address: [{
-                        ...address,
-                        country: e.target.value
-                      }]
-                    })}
-                  />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12}>
-                <Form.Item
-                  label="Zip Code"
-                  name={["address", "zipcode"]}
-                  rules={[{ required: true, message: "Please input your zip code!" }]}
-                >
-                  <Input
-                    value={address.zipcode}
-                    onChange={(e) => setUserDetails({
-                      ...userDetails,
-                      address: [{
-                        ...address,
-                        zipcode: e.target.value
-                      }]
-                    })}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
+            {userDetails.address.map((addr, index) => (
+              <React.Fragment key={index}>
+                <Title level={5} style={{ marginTop: "10px" }}>
+                  Address {index + 1}
+                </Title>
+                <Row gutter={[16, 16]}>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Street"
+                      name={["address", index, "street"]}
+                      rules={[{ required: true, message: "Please input your street!" }]}
+                    >
+                      <Input
+                        value={addr.street}
+                        onChange={(e) => {
+                          const newAddress = [...userDetails.address];
+                          newAddress[index] = { ...newAddress[index], street: e.target.value };
+                          setUserDetails({ ...userDetails, address: newAddress });
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="City"
+                      name={["address", index, "city"]}
+                      rules={[{ required: true, message: "Please input your city!" }]}
+                    >
+                      <Input
+                        value={addr.city}
+                        onChange={(e) => {
+                          const newAddress = [...userDetails.address];
+                          newAddress[index] = { ...newAddress[index], city: e.target.value };
+                          setUserDetails({ ...userDetails, address: newAddress });
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="State"
+                      name={["address", index, "state"]}
+                      rules={[{ required: true, message: "Please input your state!" }]}
+                    >
+                      <Input
+                        value={addr.state}
+                        onChange={(e) => {
+                          const newAddress = [...userDetails.address];
+                          newAddress[index] = { ...newAddress[index], state: e.target.value };
+                          setUserDetails({ ...userDetails, address: newAddress });
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Country"
+                      name={["address", index, "country"]}
+                      rules={[{ required: true, message: "Please input your country!" }]}
+                    >
+                      <Input
+                        value={addr.country}
+                        onChange={(e) => {
+                          const newAddress = [...userDetails.address];
+                          newAddress[index] = { ...newAddress[index], country: e.target.value };
+                          setUserDetails({ ...userDetails, address: newAddress });
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Zip Code"
+                      name={["address", index, "zipcode"]}
+                      rules={[{ required: true, message: "Please input your zip code!" }]}
+                    >
+                      <Input
+                        value={addr.zipcode}
+                        onChange={(e) => {
+                          const newAddress = [...userDetails.address];
+                          newAddress[index] = { ...newAddress[index], zipcode: e.target.value };
+                          setUserDetails({ ...userDetails, address: newAddress });
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                {userDetails.address.length > 1 && (
+                  <Button
+                    type="link"
+                    danger
+                    onClick={() => removeAddress(index)}
+                  >
+                    Remove Address
+                  </Button>
+                )}
+              </React.Fragment>
+            ))}
 
             <Form.Item style={{ textAlign: "center" }}>
               {isEditing ? (

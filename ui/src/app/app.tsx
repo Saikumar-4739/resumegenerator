@@ -20,20 +20,20 @@ const App: React.FC = () => (
       
     <ProtectedRoute />
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        {/* <Route element={<ProtectedRoute />}> */}
+            <Route path="/login" element={<LoginPage />} />
+            {/* <Route element={<ProtectedRoute />}> */}
             <Route path="/" element={<AppLayout />}>
-            <Route path="/user-form" element={<UserDetailsForm />} />
-            <Route path="/experience" element={<Experience />} />
-            <Route path="/academics" element={<Academics />} />
-            <Route path="/skills" element={<AddSkillsForm />} />
-            <Route path="/personal-details" element={<PersonalDetailsForm />} />
-            <Route path="/image" element={<ImageUpload />} />
-            <Route path="/preview-resume" element={<PreviewResume />} />
-            <Route path="/download-page" element={<DownloadPage />} />
-            <Route path="*" element={<Navigate to="/user-form" />} /> 
-          </Route>
-        {/* </Route>
+              <Route path="/user-form" element={<UserDetailsForm />} />
+              <Route path="/experience" element={<Experience />} />
+              <Route path="/academics" element={<Academics />} />
+              <Route path="/skills" element={<AddSkillsForm />} />
+              <Route path="/personal-details" element={<PersonalDetailsForm />} />
+              <Route path="/image" element={<ImageUpload />} />
+              <Route path="/preview-resume" element={<PreviewResume />} />
+              <Route path="/download-page" element={<DownloadPage />} />
+              <Route path="*" element={<Navigate to="/user-form" />} /> 
+            </Route>
+            {/* </Route>
         <Route path="*" element={<Navigate to="/login" />} /> */}
       </Routes>
     </Router>

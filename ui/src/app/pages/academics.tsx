@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { SaveOutlined, RightOutlined, LeftOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import "./styles/academics.css";
+import Cookies from 'js-cookie'
 
 interface Academics {
   institutionName: string;
@@ -23,7 +24,12 @@ const AddAcademicsForm: React.FC = () => {
   // Function to fetch academic data
   const fetchAcademicData = async (userId: string) => {
     try {
-      const response = await axios.post(`http://localhost:3023/academics/${userId}`);
+      const response = await axios.post(`http://localhost:3023/academics/${userId}`, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+         'cookie_id': Cookies.get('cookie_id'),
+        }});
       const backendData: Academics[] = response.data.data;
       setAcademicList(backendData);
       form.setFieldsValue({ academicList: backendData });

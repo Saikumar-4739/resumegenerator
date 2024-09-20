@@ -1,11 +1,10 @@
-
 import { NestFactory } from '@nestjs/core';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import session from 'express-session';
-import * as passport from 'passport';
+// import * as passport from 'passport';
 import cookieParser from 'cookie-parser'; 
-import redis from 'redis';
-import { strict } from 'assert';
+// import redis from 'redis';
+// import { strict } from 'assert';
 // import { MemoryStore } from 'express-session';
 // const MemoryStore = require('memorystore')(session);
 import { CookieInterceptor } from './app/loginpage/models/cookie-intereceptor';
@@ -26,16 +25,15 @@ async function bootstrap() {
   const corsOptions: CorsOptions = {
     origin: true, // Allow requests from any origin. You can specify a domain if you need more control
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // Specify allowed methods
-    allowedHeaders: 'Authorization,Content-Type,Accept,Origin,X-Requested-With,Cookie',
-
+    allowedHeaders: 'Authorization,Content-Type,Accept,Origin,X-Requested-With,cookie_id',
     credentials: true, // If you need to include credentials (cookies, etc.)
-
   };
 
   // Enable CORS with the specified options
   app.enableCors(corsOptions);
 
-
+ 
+  
   app.use(
     session({
       name: 'cookie_id',//name of the cookie
@@ -51,7 +49,7 @@ async function bootstrap() {
       }
     })
   );
-
+  
   await app.listen(3023);
 }
 

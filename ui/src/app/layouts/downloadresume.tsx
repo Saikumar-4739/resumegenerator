@@ -8,6 +8,7 @@ import '../styles/downloadresume.css';
 import Template1 from '../template-layouts/template-1';
 import Template2 from '../template-layouts/template-2';
 import axios from 'axios';
+import Cookies from 'js-cookie'
 
 export const DownloadPage: React.FC = () => {
   const [userDetails, setUserDetails] = React.useState<UserDetails[]>([]);
@@ -26,14 +27,19 @@ export const DownloadPage: React.FC = () => {
         }
 
         const response = await axios.post(
-          `http://localhost:3023/users/getUsersByUserIds/${userId}`
+          `http://localhost:3023/users/getUsersByUserIds/${userId}`, {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+             'cookie_id': Cookies.get('cookie_id'),
+            }}
         );
 
         if (response.data.status) {
           const users = response.data.data.map((user: UserDetails) => ({
             ...user,
             profileImageUrl: user.image
-              ? `http://localhost:3023/images/uploads/${user.image.path}`
+              ? `http://localhost:3023/images/uploads/${user.image.path}` 
               : undefined,
           }));
           setUserDetails(users);

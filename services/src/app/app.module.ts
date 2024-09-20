@@ -35,7 +35,8 @@ import { LoginModule } from './loginpage/login.module';
     ImageModule,
     LoginModule,
   ],
-  controllers: [AppController],
+  controllers: [
+         AppController],
   providers: [AppService],
 })
 export class AppModule {}

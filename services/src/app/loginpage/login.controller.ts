@@ -92,7 +92,8 @@ export class LoginController {
       const cookieId = req.cookies['cookie_id'];
       if (cookieId) {
         console.log('Received cookie ID:', cookieId);
-      }
+      } 
+      console.log('insode the verify session..');
 
       console.log('Session:', session);
       console.log('Session ID:', session.id);

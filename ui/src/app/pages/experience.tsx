@@ -5,6 +5,7 @@ import axios from 'axios';
 import { LeftOutlined, SaveOutlined, EditOutlined, RightOutlined, PlusOutlined } from '@ant-design/icons';
 import "./styles/experience.css";
 import Title from 'antd/es/typography/Title';
+import Cookies from 'js-cookie'
 
 interface Experience {
   objective: string;
@@ -33,8 +34,12 @@ export const Experience: React.FC = () => {
 
   const fetchExperienceData = async (userId: string) => {
     try {
-      const response = await axios.post(`http://localhost:3023/experiences/${userId}`);
-
+      const response = await axios.post(`http://localhost:3023/experiences/${userId}`,{
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+         'cookie_id': Cookies.get('cookie_id'),
+        }});
       if (response.data && Array.isArray(response.data.data)) {
         const fetchedData = response.data.data;
         if (fetchedData.length > 0) {

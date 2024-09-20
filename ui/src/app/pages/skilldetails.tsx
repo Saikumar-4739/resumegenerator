@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { SaveOutlined, EditOutlined, PlusOutlined, RightOutlined, LeftOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import "./styles/skills.css";
+import Cookies from 'js-cookie'
 
 interface Skill {
   id?: string;
@@ -27,7 +28,12 @@ export const AddSkillsForm: React.FC = () => {
 
   const fetchSkillsData = async (userId: string) => {
     try {
-      const response = await axios.post(`http://localhost:3023/skills/${userId}`);
+      const response = await axios.post(`http://localhost:3023/skills/${userId}`, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+         'cookie_id': Cookies.get('cookie_id'),
+        }});
       if (response.data?.data?.length > 0) {
         const backendData: Skill[] = response.data.data.map((skill: Skill) => ({ ...skill, isEditing: false }));
         setSkillsList(backendData);

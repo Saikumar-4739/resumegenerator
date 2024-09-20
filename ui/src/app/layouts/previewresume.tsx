@@ -22,6 +22,7 @@ import {
 } from "@ant-design/icons";
 import "../styles/previewresume.css";
 import axios from "axios";
+import Cookies from 'js-cookie';
 
 const { Item } = Form;
 
@@ -102,14 +103,19 @@ export const PreviewResume: React.FC = () => {
           throw new Error("User ID is not available");
         }
 
-        const response = await axios.post(`http://localhost:3023/users/getUsersByUserIds/${userId}`);
+        const response = await axios.post(`http://localhost:3023/users/getUsersByUserIds/${userId}`, {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+           'cookie_id': Cookies.get('cookie_id'),
+          }});
         const users = response.data.data;
 
         if (response.data.status) {
           // Map the image path to profileImageUrl
           const updatedUsers = users.map((user: any) => ({
             ...user,
-            profileImageUrl: user.image ? `http://localhost:3023/images/uploads/${user.image.path}` : undefined
+            profileImageUrl: user.image ? `http://localhost:3023/images/uploads/${user.image.path}` : undefined 
           }));
 
           setUserDetailsList(updatedUsers);

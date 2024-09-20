@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { LeftOutlined, SaveOutlined, EditOutlined, RightOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import "./styles/personaldetails.css";
+import Cookies from 'js-cookie'
 
 
 const { Option } = Select;
@@ -38,7 +39,12 @@ export const PersonalDetailsForm: React.FC = () => {
 
   const fetchPersonalDetails = async (userId: string) => {
     try {
-      const response = await axios.post(`http://localhost:3023/personal-details/${userId}`);
+      const response = await axios.post(`http://localhost:3023/personal-details/${userId}`, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+         'cookie_id': Cookies.get('cookie_id'),
+        }});
       const backendData: PersonalDetails = response.data.data[0];
       setPersonalDetails(backendData);
       form.setFieldsValue(backendData);

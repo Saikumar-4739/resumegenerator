@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get } from '@nestjs/common';
 import { UserService } from './user.services';
 import { UserCreateRequest } from './models/user-create.request';
 import { UserIdRequest } from './models/userid.request';
@@ -32,7 +32,7 @@ export class UserController {
     return this.userService.updateUser(req);
   }
 
-  @Post(':userId')
+  @Get(':userId')
   async getUserById(@Param('userId') userId: number): Promise<UserResponse> {
     return this.userService.getUserById(userId);
   }
